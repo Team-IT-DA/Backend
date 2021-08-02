@@ -23,5 +23,5 @@ public class User extends Core {
     private String account;
 
     @OneToMany(mappedBy = "user")
-    private final List<Address> addresses = new ArrayList<>();
+    private final List<ShippingInfo> shippingInfos = new ArrayList<>();
 }
