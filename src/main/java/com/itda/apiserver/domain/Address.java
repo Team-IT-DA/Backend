@@ -30,10 +30,4 @@ public class Address {
     private Integer zoneNo;
     private String latitude;
     private String longitude;
-    private Boolean defaultYn;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
 }

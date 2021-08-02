@@ -15,8 +15,5 @@ public class MainCategory extends Core {
     private String name;
 
     @OneToMany(mappedBy = "mainCategory")
-    private final List<SubCategory> subCategories = new ArrayList<>();
-
-    @OneToMany(mappedBy = "mainCategory")
     private final List<Product> products = new ArrayList<>();
 }
