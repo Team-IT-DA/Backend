@@ -30,4 +30,8 @@ public class TokenProvider {
                 .compact();
     }
 
+    public Long getUserId(String token) {
+        String subject = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        return Long.valueOf(subject);
+    }
 }
