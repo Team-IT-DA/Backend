@@ -7,4 +7,5 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-
+  profiles:
+    active: local
