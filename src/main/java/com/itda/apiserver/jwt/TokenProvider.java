@@ -1,19 +1,17 @@
 package com.itda.apiserver.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Base64;
 import java.util.Date;
 
-public class JwtTokenProvider {
+public class TokenProvider {
 
     private final String secretKey;
     private final long validityInMilliseconds;
 
-    public JwtTokenProvider(@Value("${jwt.secret") String secretKey, @Value("${jwt.token-validity-in-seconds") long validityInSeconds) {
+    public TokenProvider(@Value("${jwt.secret") String secretKey, @Value("${jwt.token-validity-in-seconds") long validityInSeconds) {
         this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
         this.validityInMilliseconds = validityInSeconds * 1000;
     }
