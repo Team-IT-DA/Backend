@@ -4,6 +4,7 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.EmailVerificationRequestDto;
 import com.itda.apiserver.dto.SignUpRequestDto;
 import com.itda.apiserver.repository.UserRepository;
+import com.itda.exception.EmailDuplicationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -50,6 +52,18 @@ public class UserServiceTest {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
         userService.verifyEmail(emailRequestDto);
+
+        verify(emailRequestDto, times(1)).getEmail();
+        verify(userRepository, times(1)).findByEmail(anyString());
+    }
+
+    @Test
+    @DisplayName("이메일 중복 확인 기능 테스트, 이미 이메일이 존재하는 경우")
+    void verifyEmailFail() {
+        when(emailRequestDto.getEmail()).thenReturn("yeon@gmail.com");
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
+
+        assertThrows(EmailDuplicationException.class, () -> userService.verifyEmail(emailRequestDto));
 
         verify(emailRequestDto, times(1)).getEmail();
         verify(userRepository, times(1)).findByEmail(anyString());
