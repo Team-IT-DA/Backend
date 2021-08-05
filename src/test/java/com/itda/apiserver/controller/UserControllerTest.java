@@ -2,6 +2,7 @@ package com.itda.apiserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itda.apiserver.domain.User;
+import com.itda.apiserver.dto.EmailVerificationRequestDto;
 import com.itda.apiserver.dto.SignUpRequestDto;
 import com.itda.apiserver.service.UserService;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,7 +27,6 @@ public class UserControllerTest {
 
     @MockBean
     private UserService userService;
-
 
     @MockBean
     private User user;
@@ -50,6 +51,20 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
 
+    }
+
+    @Test
+    @DisplayName("이메일 중복 확인 기능 테스트")
+    void verifyEmail() throws Exception {
+
+        EmailVerificationRequestDto emailDto = new EmailVerificationRequestDto();
+        emailDto.setEmail("yeon@gmail.com");
+
+        mockMvc.perform(get("/api/duplicateEmail")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(emailDto)))
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 
 }
