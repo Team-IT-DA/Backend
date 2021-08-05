@@ -14,8 +14,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public void signUp(SignUpRequestDto signUpRequestDto) {
+    public User signUp(SignUpRequestDto signUpRequestDto) {
         User user = signUpRequestDto.toUser();
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 }
