@@ -1,6 +1,5 @@
 package com.itda.apiserver.dto;
 
-import com.itda.apiserver.domain.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +13,4 @@ public class SignUpRequestDto {
     private String password;
     private String authCode;
 
-    public User toUser() {
-        return new User(name, telephone, email, password, authCode);
-    }
 }

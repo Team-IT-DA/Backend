@@ -18,8 +18,9 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User signUp(SignUpRequestDto signUpRequestDto) {
-        User user = signUpRequestDto.toUser();
+    public User signUp(SignUpRequestDto signUpDto) {
+        User user = new User(signUpDto.getName(), signUpDto.getTelephone(),
+                signUpDto.getEmail(), signUpDto.getPassword(), signUpDto.getAuthCode());
         return userRepository.save(user);
     }
 
