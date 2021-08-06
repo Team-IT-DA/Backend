@@ -49,7 +49,7 @@ public class UserServiceTest {
         when(emailRequestDto.getEmail()).thenReturn("yeon@gmail.com");
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
-        userService.verifyEmail(emailRequestDto);
+        userService.verifyEmail(emailRequestDto.getEmail());
 
         verify(emailRequestDto, times(1)).getEmail();
         verify(userRepository, times(1)).findByEmail(anyString());
@@ -61,7 +61,7 @@ public class UserServiceTest {
         when(emailRequestDto.getEmail()).thenReturn("yeon@gmail.com");
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
 
-        assertThrows(EmailDuplicationException.class, () -> userService.verifyEmail(emailRequestDto));
+        assertThrows(EmailDuplicationException.class, () -> userService.verifyEmail(emailRequestDto.getEmail()));
 
         verify(emailRequestDto, times(1)).getEmail();
         verify(userRepository, times(1)).findByEmail(anyString());
