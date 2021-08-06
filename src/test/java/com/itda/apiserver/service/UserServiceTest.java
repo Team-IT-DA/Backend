@@ -38,8 +38,6 @@ public class UserServiceTest {
     @Test
     @DisplayName("회원 가입 기능 테스트")
     void signUp() {
-        when(signUpRequestDto.toUser()).thenReturn(user);
-
         userService.signUp(signUpRequestDto);
 
         verify(userRepository, times(1)).save(any(User.class));
