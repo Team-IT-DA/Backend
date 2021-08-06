@@ -1,6 +1,8 @@
 package com.itda.apiserver.service;
 
+import com.itda.apiserver.domain.MainCategory;
 import com.itda.apiserver.domain.Product;
+import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddproductRequestDto;
 import com.itda.apiserver.repository.MainCategoryRepository;
 import com.itda.apiserver.repository.ProductRepository;
@@ -11,6 +13,8 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -30,14 +34,24 @@ class ProductServiceTest {
     MainCategoryRepository mainCategoryRepository;
 
     @Mock
+    User user;
+
+    @Mock
+    MainCategory mainCategory;
+
+    @Mock
     AddproductRequestDto addProductDto;
 
     @DisplayName("판매자는 상품 추가를 할 수 있다.")
     @Test
     void addProducts() {
-        productService.addProduct(addProductDto);
 
-        verify(userRepository, times(1)).findById(anyLong());
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(mainCategoryRepository.findById(anyLong())).thenReturn(Optional.of(mainCategory));
+
+        productService.addProduct(addProductDto, 1L);
+
+        verify(userRepository, times(1)).findById(1L);
         verify(mainCategoryRepository, times(1)).findById(anyLong());
         verify(productRepository, times(1)).save(any(Product.class));
     }
