@@ -25,8 +25,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void verifyEmail(EmailVerificationRequestDto emailRequestDto) {
-        Optional<User> optionalUser = userRepository.findByEmail(emailRequestDto.getEmail());
+    public void verifyEmail(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
 
         if (optionalUser.isPresent()) {
             throw new EmailDuplicationException();

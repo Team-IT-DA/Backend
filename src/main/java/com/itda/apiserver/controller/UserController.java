@@ -26,7 +26,7 @@ public class UserController {
 
     @GetMapping("/api/duplicateEmail")
     public ApiResult<Void> verifyEmail(@RequestBody EmailVerificationRequestDto requestDto) {
-        userService.verifyEmail(requestDto);
+        userService.verifyEmail(requestDto.getEmail());
         return ApiResult.ok(null);
     }
 }
