@@ -1,7 +1,6 @@
 package com.itda.apiserver.service;
 
 import com.itda.apiserver.domain.User;
-import com.itda.apiserver.dto.EmailVerificationRequestDto;
 import com.itda.apiserver.dto.SignUpRequestDto;
 import com.itda.apiserver.repository.UserRepository;
 import com.itda.exception.EmailDuplicationException;
@@ -19,6 +18,8 @@ public class UserService {
     }
 
     public User signUp(SignUpRequestDto signUpDto) {
+        verifyEmail(signUpDto.getEmail());
+
         User user = new User(signUpDto.getName(), signUpDto.getTelephone(),
                 signUpDto.getEmail(), signUpDto.getPassword(), signUpDto.getAuthCode());
         return userRepository.save(user);
