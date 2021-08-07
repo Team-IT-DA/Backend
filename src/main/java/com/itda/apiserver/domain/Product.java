@@ -51,11 +51,11 @@ public class Product extends Core {
     @Lob
     private String description;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "main_category_id")
     private MainCategory mainCategory;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "seller")
     private User seller;
 
