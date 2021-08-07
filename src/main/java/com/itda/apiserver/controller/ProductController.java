@@ -1,6 +1,7 @@
 package com.itda.apiserver.controller;
 
 import com.itda.apiserver.dto.AddproductRequestDto;
+import com.itda.apiserver.dto.ApiResult;
 import com.itda.apiserver.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -20,8 +21,9 @@ public class ProductController {
      * @param userId
      */
     @PostMapping
-    public void addProduct(@RequestBody AddproductRequestDto addproductRequestDto, @RequestParam Long userId) {
+    public ApiResult<Void> addProduct(@RequestBody AddproductRequestDto addproductRequestDto, @RequestParam Long userId) {
         productService.addProduct(addproductRequestDto, userId);
+        return ApiResult.ok(null);
     }
 
 }
