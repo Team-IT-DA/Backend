@@ -1,6 +1,7 @@
 package com.itda.apiserver.domain;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -24,4 +25,15 @@ public class User extends Core {
 
     @OneToMany(mappedBy = "user")
     private final List<ShippingInfo> shippingInfos = new ArrayList<>();
+
+    @Builder
+    public User(String name, String phone, String email, Role role, String password, String account) {
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.role = role;
+        this.password = password;
+        this.account = account;
+    }
+
 }
