@@ -3,7 +3,9 @@ package com.itda.apiserver.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.EmailVerificationRequestDto;
+import com.itda.apiserver.dto.LoginRequestDto;
 import com.itda.apiserver.dto.SignUpRequestDto;
+import com.itda.apiserver.dto.TokenResponseDto;
 import com.itda.apiserver.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,11 +15,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
@@ -64,6 +67,25 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(emailDto)))
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("로그인 기능 테스트")
+    void login() throws Exception {
+
+        LoginRequestDto loginDto = new LoginRequestDto();
+        loginDto.setEmail("yeon@gmail.com");
+        loginDto.setPassword("yeon1234");
+
+        TokenResponseDto tokenDto = new TokenResponseDto("thisIsToken");
+        when(userService.login(any(LoginRequestDto.class))).thenReturn(tokenDto);
+
+        mockMvc.perform(post("/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.token").exists())
                 .andDo(print());
     }
 
