@@ -107,4 +107,21 @@ public class UserServiceTest {
         verify(user, times(0)).getPassword();
     }
 
+    @Test
+    @DisplayName("로그인 기능 테스트, 비밀번호가 일치하지 않는 경우")
+    void wrongPassword() {
+        when(loginRequestDto.getEmail()).thenReturn("yeon@gmail.com");
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(loginRequestDto.getPassword()).thenReturn("weirdPassword");
+        when(user.getPassword()).thenReturn("yeon1234");
+
+        assertThrows(WrongPasswordException.class, () -> userService.login(loginRequestDto));
+
+        verify(loginRequestDto, times(1)).getEmail();
+        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(loginRequestDto, times(1)).getPassword();
+        verify(user, times(1)).getPassword();
+        verify(tokenProvider, times(0)).createToken(anyLong());
+    }
+
 }
