@@ -13,7 +13,7 @@ public class TokenProvider {
     private final String secretKey;
     private final long validityInMilliseconds;
 
-    public TokenProvider(@Value("${jwt.secret") String secretKey, @Value("${jwt.token-validity-in-seconds") long validityInSeconds) {
+    public TokenProvider(@Value("${jwt.secret}") String secretKey, @Value("${jwt.token-validity-in-seconds}") long validityInSeconds) {
         this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
         this.validityInMilliseconds = validityInSeconds * 1000;
     }
