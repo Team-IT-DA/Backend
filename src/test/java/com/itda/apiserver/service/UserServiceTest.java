@@ -8,6 +8,7 @@ import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.repository.UserRepository;
 import com.itda.exception.EmailDuplicationException;
 import com.itda.exception.UserNotFoundException;
+import com.itda.exception.WrongPasswordException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,7 @@ public class UserServiceTest {
         verify(loginRequestDto, times(1)).getPassword();
         verify(user, times(1)).getPassword();
         verify(userRepository, times(1)).findByEmail(anyString());
+        verify(tokenProvider, times(1)).createToken(anyLong());
     }
 
     @Test
@@ -105,6 +107,7 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(loginRequestDto, times(0)).getPassword();
         verify(user, times(0)).getPassword();
+        verify(tokenProvider, times(0)).createToken(anyLong());
     }
 
     @Test
