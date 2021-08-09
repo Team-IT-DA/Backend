@@ -2,10 +2,12 @@ package com.itda.apiserver.jwt;
 
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.Base64;
 import java.util.Date;
 
+@Component
 public class TokenProvider {
 
     private final String secretKey;
@@ -16,8 +18,8 @@ public class TokenProvider {
         this.validityInMilliseconds = validityInSeconds * 1000;
     }
 
-    public String createToken(String subject) {
-        Claims claims = Jwts.claims().setSubject(subject);
+    public String createToken(Long subject) {
+        Claims claims = Jwts.claims().setSubject(subject.toString());
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
