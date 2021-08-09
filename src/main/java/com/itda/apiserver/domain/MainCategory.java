@@ -1,7 +1,6 @@
 package com.itda.apiserver.domain;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
@@ -17,9 +16,4 @@ public class MainCategory extends Core {
 
     @OneToMany(mappedBy = "mainCategory")
     private final List<Product> products = new ArrayList<>();
-
-    public MainCategory(String name) {
-        this.name = name;
-    }
-
 }
