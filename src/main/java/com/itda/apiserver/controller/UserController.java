@@ -1,8 +1,6 @@
 package com.itda.apiserver.controller;
 
-import com.itda.apiserver.dto.ApiResult;
-import com.itda.apiserver.dto.EmailVerificationRequestDto;
-import com.itda.apiserver.dto.SignUpRequestDto;
+import com.itda.apiserver.dto.*;
 import com.itda.apiserver.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,5 +26,11 @@ public class UserController {
     public ApiResult<Void> verifyEmail(@RequestBody EmailVerificationRequestDto requestDto) {
         userService.verifyEmail(requestDto.getEmail());
         return ApiResult.ok(null);
+    }
+
+    @PostMapping("/api/login")
+    public ApiResult<TokenResponseDto> login(@RequestBody LoginRequestDto requestDto) {
+        TokenResponseDto response = userService.login(requestDto);
+        return ApiResult.ok(response);
     }
 }
