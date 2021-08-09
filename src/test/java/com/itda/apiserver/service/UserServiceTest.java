@@ -7,6 +7,7 @@ import com.itda.apiserver.dto.SignUpRequestDto;
 import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.repository.UserRepository;
 import com.itda.exception.EmailDuplicationException;
+import com.itda.exception.UserNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +91,20 @@ public class UserServiceTest {
         verify(loginRequestDto, times(1)).getPassword();
         verify(user, times(1)).getPassword();
         verify(userRepository, times(1)).findByEmail(anyString());
+    }
+
+    @Test
+    @DisplayName("로그인 기능 테스트, 이메일이 일치하지 않는 경우")
+    void loginFail() {
+        when(loginRequestDto.getEmail()).thenReturn("stranger@gmail.com");
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> userService.login(loginRequestDto));
+
+        verify(loginRequestDto, times(1)).getEmail();
+        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(loginRequestDto, times(0)).getPassword();
+        verify(user, times(0)).getPassword();
     }
 
 }
