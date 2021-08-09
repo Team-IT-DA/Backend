@@ -1,6 +1,8 @@
 package com.itda.apiserver.domain;
 
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends Core {
 
@@ -24,4 +27,29 @@ public class User extends Core {
 
     @OneToMany(mappedBy = "user")
     private final List<ShippingInfo> shippingInfos = new ArrayList<>();
+
+    public User(String name, String phone, String email, String password, String authCode) {
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.password = password;
+        this.role = getRole(authCode);
+    }
+
+    @Builder
+    public User(String name, String phone, String email, Role role, String password, String account) {
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.role = role;
+        this.password = password;
+        this.account = account;
+    }
+
+    private Role getRole(String authCode) {
+        if (authCode == null) {
+            return Role.USER;
+        }
+        return Role.SELLER;
+    }
 }

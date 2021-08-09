@@ -7,4 +7,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+  profiles:
+    active: local
 
+jwt:
+  secret: yeon
+  token-validity-in-seconds: 86400
