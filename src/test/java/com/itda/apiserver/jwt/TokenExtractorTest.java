@@ -1,12 +1,13 @@
 package com.itda.apiserver.jwt;
 
-import org.assertj.core.api.Assertions;
+import com.itda.exception.InvalidTokenException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 class TokenExtractorTest {
@@ -22,6 +23,15 @@ class TokenExtractorTest {
         String value = "Bearer thisIsToken";
         String extractedToken = tokenExtractor.extractToken(value);
 
-        Assertions.assertThat(extractedToken).isEqualTo(token);
+        assertThat(extractedToken).isEqualTo(token);
+    }
+
+    @Test
+    @DisplayName("토큰 추출 시 유효하지 않은 토큰일 경우 InvalidTokenException 발생")
+    void extractInvalidToken() {
+        String invalidValue = "thisIsInvalidToken";
+
+        assertThatThrownBy(() -> tokenExtractor.extractToken(invalidValue))
+                .isInstanceOf(InvalidTokenException.class);
     }
 }
