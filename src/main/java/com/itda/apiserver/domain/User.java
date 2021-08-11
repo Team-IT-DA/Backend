@@ -47,9 +47,6 @@ public class User extends Core {
     }
 
     private Role getRole(String authCode) {
-        if (authCode == null) {
-            return Role.USER;
-        }
-        return Role.SELLER;
+        return authCode == null ? Role.USER : Role.SELLER;
     }
 }

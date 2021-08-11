@@ -4,7 +4,6 @@ import com.itda.apiserver.dto.AddproductRequestDto;
 import com.itda.apiserver.dto.ApiResult;
 import com.itda.apiserver.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
