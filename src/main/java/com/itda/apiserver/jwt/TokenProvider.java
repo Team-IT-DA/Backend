@@ -33,11 +33,12 @@ public class TokenProvider {
     }
 
     public Long getUserId(String token) {
+        verifyToken(token);
         String subject = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
         return Long.valueOf(subject);
     }
 
-    public boolean validateToken(String token) {
+    private boolean verifyToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             if (claims.getBody().getExpiration().before(new Date())) {
