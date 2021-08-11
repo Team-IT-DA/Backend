@@ -58,5 +58,30 @@ class TokenProviderTest {
         assertThat(userIdFromToken).isEqualTo(userId);
     }
 
+    @Test
+    @DisplayName("유효하지 않은 토큰일 경우, InvalidTokenException 발생")
+    void getUserId_invalidToken() {
+        String token = createInvalidToken(userId);
 
+        assertThatThrownBy(() -> tokenProvider.getUserId(token)).isInstanceOf(InvalidTokenException.class);
+    }
+
+    /**
+     * 유효기간이 만료된 토큰 생성
+     */
+    private String createInvalidToken(Long subject) {
+        Claims claims = Jwts.claims().setSubject(subject.toString());
+
+        long aDayAgo = System.currentTimeMillis() - (86400 * 1000);
+
+        Date now = new Date(aDayAgo);
+        Date validity = new Date(now.getTime() + validityInMilliseconds);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
 }
