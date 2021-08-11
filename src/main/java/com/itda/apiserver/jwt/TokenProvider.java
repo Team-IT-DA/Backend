@@ -1,5 +1,6 @@
 package com.itda.apiserver.jwt;
 
+import com.itda.exception.InvalidTokenException;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -33,12 +34,14 @@ public class TokenProvider {
     }
 
     public Long getUserId(String token) {
-        verifyToken(token);
+        if (!isTokenValid(token)) {
+            throw new InvalidTokenException();
+        }
         String subject = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
         return Long.valueOf(subject);
     }
 
-    private boolean verifyToken(String token) {
+    private boolean isTokenValid(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             if (claims.getBody().getExpiration().before(new Date())) {
