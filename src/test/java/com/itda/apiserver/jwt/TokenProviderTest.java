@@ -1,8 +1,10 @@
 package com.itda.apiserver.jwt;
 
+import com.itda.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 class TokenProviderTest {
@@ -24,6 +27,9 @@ class TokenProviderTest {
 
     @Value("${jwt.secret}")
     private String secretKey;
+
+    @Value("${jwt.token-validity-in-seconds}")
+    private long validityInMilliseconds;
 
     @BeforeEach
     void setUp() {
@@ -42,5 +48,15 @@ class TokenProviderTest {
         assertThat(claims.getBody().getExpiration()).isAfter(new Date());
 
     }
+
+    @Test
+    @DisplayName("토큰에서 user id 얻어오는 기능 테스트")
+    void getUserId() {
+        String token = tokenProvider.createToken(userId);
+        Long userIdFromToken = tokenProvider.getUserId(token);
+
+        assertThat(userIdFromToken).isEqualTo(userId);
+    }
+
 
 }
