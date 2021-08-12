@@ -5,6 +5,7 @@ import com.itda.apiserver.domain.MainCategory;
 import com.itda.apiserver.domain.Role;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddproductRequestDto;
+import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.repository.MainCategoryRepository;
 import com.itda.apiserver.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +40,9 @@ class ProductControllerTest {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
+    @Autowired
+    TokenProvider tokenProvider;
+
     @MockBean
     UserRepository userRepository;
 
@@ -58,6 +63,8 @@ class ProductControllerTest {
                 .password("1234@@@")
                 .account("110-440-1104123")
                 .build();
+
+        String token = "Bearer " + tokenProvider.createToken(1L);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(mainCategoryRepository.findById(anyLong())).thenReturn(Optional.of(mainCategory));
@@ -81,8 +88,8 @@ class ProductControllerTest {
         addproductRequestDto.setAccount("110-440-114123");
         addproductRequestDto.setMainCategoryId(1L);
 
-        mockMvc.perform(post("/products")
-                .param("userId", "1")
+        mockMvc.perform(post("/api/products")
+                .header(HttpHeaders.AUTHORIZATION, token)
                 .content(objectMapper.writeValueAsString(addproductRequestDto))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
