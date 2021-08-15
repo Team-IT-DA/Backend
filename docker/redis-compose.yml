@@ -1,0 +1,12 @@
+version: '3.7'
+services: 
+  redis:
+    image: redis:6.2
+    command: redis-server --requirepass itda --port 6379
+    container_name: itda-redis
+    hostname: itda
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    ports:
+      - 6379:6379

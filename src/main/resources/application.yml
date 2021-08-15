@@ -10,6 +10,13 @@ spring:
   profiles:
     active: local
 
+  redis:
+    port: 6379
+    host: localhost
+    password: itda
+
 jwt:
   secret: yeon
   token-validity-in-seconds: 86400
+
+
