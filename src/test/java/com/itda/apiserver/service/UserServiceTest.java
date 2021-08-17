@@ -57,24 +57,22 @@ public class UserServiceTest {
     @DisplayName("이메일 중복 확인 기능 테스트, 중복된 이메일이 없는 경우")
     void verifyEmail() {
         when(emailRequestDto.getEmail()).thenReturn("yeon@gmail.com");
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.countByEmail(anyString())).thenReturn(0);
 
         userService.verifyEmail(emailRequestDto.getEmail());
 
-        verify(emailRequestDto, times(1)).getEmail();
-        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(userRepository, times(1)).countByEmail(anyString());
     }
 
     @Test
     @DisplayName("이메일 중복 확인 기능 테스트, 이미 이메일이 존재하는 경우")
     void verifyEmailFail() {
         when(emailRequestDto.getEmail()).thenReturn("yeon@gmail.com");
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(userRepository.countByEmail(anyString())).thenReturn(1);
 
         assertThrows(EmailDuplicationException.class, () -> userService.verifyEmail(emailRequestDto.getEmail()));
 
-        verify(emailRequestDto, times(1)).getEmail();
-        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(userRepository, times(1)).countByEmail(anyString());
     }
 
     @Test
