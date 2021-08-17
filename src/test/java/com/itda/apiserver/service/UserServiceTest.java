@@ -4,13 +4,14 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.EmailVerificationRequestDto;
 import com.itda.apiserver.dto.LoginRequestDto;
 import com.itda.apiserver.dto.SignUpRequestDto;
-import com.itda.apiserver.jwt.TokenProvider;
-import com.itda.apiserver.repository.UserRepository;
 import com.itda.apiserver.exception.EmailDuplicationException;
 import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.exception.WrongPasswordException;
+import com.itda.apiserver.jwt.TokenProvider;
+import com.itda.apiserver.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,16 +31,16 @@ public class UserServiceTest {
     @MockBean
     private UserRepository userRepository;
 
-    @MockBean
+    @Mock
     private SignUpRequestDto signUpRequestDto;
 
-    @MockBean
+    @Mock
     private User user;
 
-    @MockBean
+    @Mock
     private EmailVerificationRequestDto emailRequestDto;
 
-    @MockBean
+    @Mock
     private LoginRequestDto loginRequestDto;
 
     @MockBean
