@@ -44,12 +44,13 @@ public class TokenProvider {
     private boolean isTokenValid(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            if (claims.getBody().getExpiration().before(new Date())) {
-                return false;
-            }
-            return true;
+            return !isExpired(claims);
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    private boolean isExpired(Jws<Claims> claims) {
+        return claims.getBody().getExpiration().before(new Date());
     }
 }
