@@ -1,6 +1,6 @@
 package com.itda.apiserver.dto;
 
-import com.itda.exception.ErrorCode;
+import com.itda.apiserver.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

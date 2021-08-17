@@ -1,7 +1,7 @@
 package com.itda.apiserver.jwt;
 
-import com.itda.exception.InvalidTokenException;
-import com.itda.exception.TokenNotFoundException;
+import com.itda.apiserver.exception.InvalidTokenException;
+import com.itda.apiserver.exception.TokenNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,6 +1,6 @@
 package com.itda.apiserver.jwt;
 
-import com.itda.exception.InvalidTokenException;
+import com.itda.apiserver.exception.InvalidTokenException;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

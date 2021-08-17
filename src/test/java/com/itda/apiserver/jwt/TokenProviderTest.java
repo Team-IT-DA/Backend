@@ -1,6 +1,6 @@
 package com.itda.apiserver.jwt;
 
-import com.itda.exception.InvalidTokenException;
+import com.itda.apiserver.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;

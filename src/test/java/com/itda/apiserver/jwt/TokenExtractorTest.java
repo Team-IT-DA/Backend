@@ -1,6 +1,6 @@
 package com.itda.apiserver.jwt;
 
-import com.itda.exception.InvalidTokenException;
+import com.itda.apiserver.exception.InvalidTokenException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

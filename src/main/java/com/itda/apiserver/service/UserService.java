@@ -6,9 +6,9 @@ import com.itda.apiserver.dto.SignUpRequestDto;
 import com.itda.apiserver.dto.TokenResponseDto;
 import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.repository.UserRepository;
-import com.itda.exception.EmailDuplicationException;
-import com.itda.exception.UserNotFoundException;
-import com.itda.exception.WrongPasswordException;
+import com.itda.apiserver.exception.EmailDuplicationException;
+import com.itda.apiserver.exception.UserNotFoundException;
+import com.itda.apiserver.exception.WrongPasswordException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
