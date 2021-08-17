@@ -49,4 +49,8 @@ public class User extends Core {
     private Role getRole(String authCode) {
         return authCode == null ? Role.USER : Role.SELLER;
     }
+
+    public boolean isPasswordMatching(String password) {
+        return this.password.equals(password);
+    }
 }

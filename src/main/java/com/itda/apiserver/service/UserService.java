@@ -41,7 +41,7 @@ public class UserService {
     public TokenResponseDto login(LoginRequestDto loginRequestDto) {
         User user = userRepository.findByEmail(loginRequestDto.getEmail()).orElseThrow(UserNotFoundException::new);
 
-        if (!user.getPassword().equals(loginRequestDto.getPassword())) {
+        if (!user.isPasswordMatching(loginRequestDto.getPassword())) {
             throw new WrongPasswordException();
         }
 
