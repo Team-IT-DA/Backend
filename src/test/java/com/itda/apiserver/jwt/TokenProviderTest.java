@@ -66,9 +66,6 @@ class TokenProviderTest {
         assertThatThrownBy(() -> tokenProvider.getUserId(token)).isInstanceOf(InvalidTokenException.class);
     }
 
-    /**
-     * 유효기간이 만료된 토큰 생성
-     */
     private String createInvalidToken(Long subject) {
         Claims claims = Jwts.claims().setSubject(subject.toString());
 
