@@ -4,9 +4,13 @@ import com.itda.apiserver.annotation.LoginRequired;
 import com.itda.apiserver.annotation.UserId;
 import com.itda.apiserver.dto.AddproductRequestDto;
 import com.itda.apiserver.dto.ApiResult;
+import com.itda.apiserver.dto.GetAllProductDto;
 import com.itda.apiserver.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
@@ -14,6 +18,11 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService productService;
+
+    @GetMapping
+    public ApiResult<List<GetAllProductDto>> getProduct(Pageable pageable) {
+        return ApiResult.ok(productService.getProducts(pageable));
+    }
 
     @PostMapping
     @LoginRequired

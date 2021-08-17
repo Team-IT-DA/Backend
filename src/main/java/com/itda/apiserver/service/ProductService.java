@@ -4,11 +4,15 @@ import com.itda.apiserver.domain.MainCategory;
 import com.itda.apiserver.domain.Product;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddproductRequestDto;
+import com.itda.apiserver.dto.GetAllProductDto;
 import com.itda.apiserver.repository.MainCategoryRepository;
 import com.itda.apiserver.repository.ProductRepository;
 import com.itda.apiserver.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,4 +51,15 @@ public class ProductService {
         productRepository.save(product);
 
     }
+
+    public List<GetAllProductDto> getProducts(Pageable pageable) {
+        return productRepository
+                .findAll(pageable)
+                .stream()
+                .map(product -> {
+                    return new GetAllProductDto(product.getId(), product.getImageUrl(), product.getTitle(), product.getSeller().getName(), product.getPrice());
+                })
+                .collect(Collectors.toList());
+    }
+
 }
