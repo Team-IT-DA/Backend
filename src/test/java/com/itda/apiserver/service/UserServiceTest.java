@@ -81,14 +81,14 @@ public class UserServiceTest {
         when(loginRequestDto.getEmail()).thenReturn("yeon@gmail.com");
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(loginRequestDto.getPassword()).thenReturn("yeon1234");
-        when(user.getPassword()).thenReturn("yeon1234");
+        when(user.isPasswordMatching(anyString())).thenReturn(true);
         when(tokenProvider.createToken(anyLong())).thenReturn("token");
 
         userService.login(loginRequestDto);
 
         verify(loginRequestDto, times(1)).getEmail();
         verify(loginRequestDto, times(1)).getPassword();
-        verify(user, times(1)).getPassword();
+        verify(user, times(1)).isPasswordMatching(anyString());
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(tokenProvider, times(1)).createToken(anyLong());
     }
@@ -104,7 +104,7 @@ public class UserServiceTest {
         verify(loginRequestDto, times(1)).getEmail();
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(loginRequestDto, times(0)).getPassword();
-        verify(user, times(0)).getPassword();
+        verify(user, times(0)).isPasswordMatching(anyString());
         verify(tokenProvider, times(0)).createToken(anyLong());
     }
 
@@ -114,14 +114,14 @@ public class UserServiceTest {
         when(loginRequestDto.getEmail()).thenReturn("yeon@gmail.com");
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(loginRequestDto.getPassword()).thenReturn("weirdPassword");
-        when(user.getPassword()).thenReturn("yeon1234");
+        when(user.isPasswordMatching(anyString())).thenReturn(false);
 
         assertThrows(WrongPasswordException.class, () -> userService.login(loginRequestDto));
 
         verify(loginRequestDto, times(1)).getEmail();
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(loginRequestDto, times(1)).getPassword();
-        verify(user, times(1)).getPassword();
+        verify(user, times(1)).isPasswordMatching(anyString());
         verify(tokenProvider, times(0)).createToken(anyLong());
     }
 
