@@ -9,18 +9,15 @@ import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.exception.WrongPasswordException;
 import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
-
-    public UserService(UserRepository userRepository, TokenProvider tokenProvider) {
-        this.userRepository = userRepository;
-        this.tokenProvider = tokenProvider;
-    }
 
     public User signUp(SignUpRequestDto signUpDto) {
         verifyEmail(signUpDto.getEmail());
