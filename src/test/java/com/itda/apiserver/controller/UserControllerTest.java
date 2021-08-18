@@ -6,12 +6,16 @@ import com.itda.apiserver.dto.EmailVerificationRequestDto;
 import com.itda.apiserver.dto.LoginRequestDto;
 import com.itda.apiserver.dto.SignUpRequestDto;
 import com.itda.apiserver.dto.TokenResponseDto;
+import com.itda.apiserver.jwt.TokenExtractor;
+import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -20,9 +24,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
+@Import(value = {TokenProvider.class, TokenExtractor.class})
 public class UserControllerTest {
 
     @Autowired
@@ -31,7 +37,7 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
-    @MockBean
+    @Mock
     private User user;
 
     private ObjectMapper objectMapper = new ObjectMapper();
