@@ -4,25 +4,20 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.LoginRequestDto;
 import com.itda.apiserver.dto.SignUpRequestDto;
 import com.itda.apiserver.dto.TokenResponseDto;
+import com.itda.apiserver.exception.EmailDuplicationException;
+import com.itda.apiserver.exception.UserNotFoundException;
+import com.itda.apiserver.exception.WrongPasswordException;
 import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.repository.UserRepository;
-import com.itda.exception.EmailDuplicationException;
-import com.itda.exception.UserNotFoundException;
-import com.itda.exception.WrongPasswordException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
-
-    public UserService(UserRepository userRepository, TokenProvider tokenProvider) {
-        this.userRepository = userRepository;
-        this.tokenProvider = tokenProvider;
-    }
 
     public User signUp(SignUpRequestDto signUpDto) {
         verifyEmail(signUpDto.getEmail());
@@ -33,9 +28,9 @@ public class UserService {
     }
 
     public void verifyEmail(String email) {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+        int userCount = userRepository.countByEmail(email);
 
-        if (optionalUser.isPresent()) {
+        if (userCount > 0) {
             throw new EmailDuplicationException();
         }
     }
@@ -43,7 +38,7 @@ public class UserService {
     public TokenResponseDto login(LoginRequestDto loginRequestDto) {
         User user = userRepository.findByEmail(loginRequestDto.getEmail()).orElseThrow(UserNotFoundException::new);
 
-        if (!user.getPassword().equals(loginRequestDto.getPassword())) {
+        if (!user.isPasswordMatching(loginRequestDto.getPassword())) {
             throw new WrongPasswordException();
         }
 

@@ -1,4 +1,4 @@
-package com.itda.exception;
+package com.itda.apiserver.exception;
 
 public class TokenNotFoundException extends RuntimeException {
 }

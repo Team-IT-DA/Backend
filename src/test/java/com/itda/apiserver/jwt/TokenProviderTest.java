@@ -1,6 +1,6 @@
 package com.itda.apiserver.jwt;
 
-import com.itda.exception.InvalidTokenException;
+import com.itda.apiserver.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -66,9 +66,6 @@ class TokenProviderTest {
         assertThatThrownBy(() -> tokenProvider.getUserId(token)).isInstanceOf(InvalidTokenException.class);
     }
 
-    /**
-     * 유효기간이 만료된 토큰 생성
-     */
     private String createInvalidToken(Long subject) {
         Claims claims = Jwts.claims().setSubject(subject.toString());
 

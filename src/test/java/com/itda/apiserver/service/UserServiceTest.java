@@ -4,13 +4,14 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.EmailVerificationRequestDto;
 import com.itda.apiserver.dto.LoginRequestDto;
 import com.itda.apiserver.dto.SignUpRequestDto;
+import com.itda.apiserver.exception.EmailDuplicationException;
+import com.itda.apiserver.exception.UserNotFoundException;
+import com.itda.apiserver.exception.WrongPasswordException;
 import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.repository.UserRepository;
-import com.itda.exception.EmailDuplicationException;
-import com.itda.exception.UserNotFoundException;
-import com.itda.exception.WrongPasswordException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,16 +31,16 @@ public class UserServiceTest {
     @MockBean
     private UserRepository userRepository;
 
-    @MockBean
+    @Mock
     private SignUpRequestDto signUpRequestDto;
 
-    @MockBean
+    @Mock
     private User user;
 
-    @MockBean
+    @Mock
     private EmailVerificationRequestDto emailRequestDto;
 
-    @MockBean
+    @Mock
     private LoginRequestDto loginRequestDto;
 
     @MockBean
@@ -57,24 +58,22 @@ public class UserServiceTest {
     @DisplayName("이메일 중복 확인 기능 테스트, 중복된 이메일이 없는 경우")
     void verifyEmail() {
         when(emailRequestDto.getEmail()).thenReturn("yeon@gmail.com");
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.countByEmail(anyString())).thenReturn(0);
 
         userService.verifyEmail(emailRequestDto.getEmail());
 
-        verify(emailRequestDto, times(1)).getEmail();
-        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(userRepository, times(1)).countByEmail(anyString());
     }
 
     @Test
     @DisplayName("이메일 중복 확인 기능 테스트, 이미 이메일이 존재하는 경우")
     void verifyEmailFail() {
         when(emailRequestDto.getEmail()).thenReturn("yeon@gmail.com");
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(userRepository.countByEmail(anyString())).thenReturn(1);
 
         assertThrows(EmailDuplicationException.class, () -> userService.verifyEmail(emailRequestDto.getEmail()));
 
-        verify(emailRequestDto, times(1)).getEmail();
-        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(userRepository, times(1)).countByEmail(anyString());
     }
 
     @Test
@@ -83,14 +82,14 @@ public class UserServiceTest {
         when(loginRequestDto.getEmail()).thenReturn("yeon@gmail.com");
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(loginRequestDto.getPassword()).thenReturn("yeon1234");
-        when(user.getPassword()).thenReturn("yeon1234");
+        when(user.isPasswordMatching(anyString())).thenReturn(true);
         when(tokenProvider.createToken(anyLong())).thenReturn("token");
 
         userService.login(loginRequestDto);
 
         verify(loginRequestDto, times(1)).getEmail();
         verify(loginRequestDto, times(1)).getPassword();
-        verify(user, times(1)).getPassword();
+        verify(user, times(1)).isPasswordMatching(anyString());
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(tokenProvider, times(1)).createToken(anyLong());
     }
@@ -106,7 +105,7 @@ public class UserServiceTest {
         verify(loginRequestDto, times(1)).getEmail();
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(loginRequestDto, times(0)).getPassword();
-        verify(user, times(0)).getPassword();
+        verify(user, times(0)).isPasswordMatching(anyString());
         verify(tokenProvider, times(0)).createToken(anyLong());
     }
 
@@ -116,14 +115,14 @@ public class UserServiceTest {
         when(loginRequestDto.getEmail()).thenReturn("yeon@gmail.com");
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(loginRequestDto.getPassword()).thenReturn("weirdPassword");
-        when(user.getPassword()).thenReturn("yeon1234");
+        when(user.isPasswordMatching(anyString())).thenReturn(false);
 
         assertThrows(WrongPasswordException.class, () -> userService.login(loginRequestDto));
 
         verify(loginRequestDto, times(1)).getEmail();
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(loginRequestDto, times(1)).getPassword();
-        verify(user, times(1)).getPassword();
+        verify(user, times(1)).isPasswordMatching(anyString());
         verify(tokenProvider, times(0)).createToken(anyLong());
     }
 

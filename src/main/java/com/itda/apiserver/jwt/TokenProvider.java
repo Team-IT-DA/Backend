@@ -1,6 +1,6 @@
 package com.itda.apiserver.jwt;
 
-import com.itda.exception.InvalidTokenException;
+import com.itda.apiserver.exception.InvalidTokenException;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -44,12 +44,13 @@ public class TokenProvider {
     private boolean isTokenValid(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            if (claims.getBody().getExpiration().before(new Date())) {
-                return false;
-            }
-            return true;
+            return !isExpired(claims);
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    private boolean isExpired(Jws<Claims> claims) {
+        return claims.getBody().getExpiration().before(new Date());
     }
 }

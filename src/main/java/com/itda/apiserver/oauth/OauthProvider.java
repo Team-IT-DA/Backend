@@ -1,4 +1,4 @@
-package com.itda.oauth;
+package com.itda.apiserver.oauth;
 
 public interface OauthProvider {
 
