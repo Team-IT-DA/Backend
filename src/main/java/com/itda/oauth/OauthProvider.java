@@ -4,5 +4,4 @@ public interface OauthProvider {
 
     void login();
 
-    String getAccessToken();
 }
