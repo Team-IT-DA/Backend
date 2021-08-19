@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +26,7 @@ public class NaverLoginService implements OauthProvider {
 
     public NaverAccessToken getAccessToken(String code) {
 
-        Mono<NaverAccessToken> naverAccessTokenMono = webClient.mutate()
+        return webClient.mutate()
                 .build()
                 .get()
                 .uri(uriBuilder ->
@@ -40,9 +39,8 @@ public class NaverLoginService implements OauthProvider {
                                 .queryParam("code", code)
                                 .build())
                 .retrieve()
-                .bodyToMono(NaverAccessToken.class);
-
-        return naverAccessTokenMono.block();
+                .bodyToMono(NaverAccessToken.class)
+                .block();
     }
 
     public NaverUserInfo getUserInfo(String accessToken) {
