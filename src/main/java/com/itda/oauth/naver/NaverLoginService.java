@@ -1,5 +1,6 @@
-package com.itda.oauth;
+package com.itda.oauth.naver;
 
+import com.itda.oauth.OauthProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,7 @@ public class NaverLoginService implements OauthProvider {
     private final WebClient webClient;
 
     @Override
-    public void login() {
-
+    public void login(String code) {
     }
 
     public NaverAccessToken getAccessToken(String code) {

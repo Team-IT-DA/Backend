@@ -1,6 +1,7 @@
-package com.itda.oauth;
+package com.itda.oauth.naver;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itda.oauth.naver.NaverPersonalInfo;
 import lombok.Getter;
 import lombok.ToString;
 
