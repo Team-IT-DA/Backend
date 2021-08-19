@@ -44,4 +44,16 @@ public class NaverLoginService implements OauthProvider {
 
         return naverAccessTokenMono.block();
     }
+
+    public NaverUserInfo getUserInfo(String accessToken) {
+
+        return webClient.mutate()
+                .build()
+                .get()
+                .uri("https://openapi.naver.com/v1/nid/me")
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .bodyToMono(NaverUserInfo.class)
+                .block();
+    }
 }
