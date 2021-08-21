@@ -1,20 +1,13 @@
 package com.itda.apiserver.redistest;
 
-import com.itda.apiserver.domain.Product;
-import com.itda.apiserver.domain.Role;
-import com.itda.apiserver.domain.User;
-import com.itda.apiserver.redis.ShopBascket;
+import com.itda.apiserver.redis.BascketProduct;
+import com.itda.apiserver.redis.ShopBasket;
 import com.itda.apiserver.repository.ShopBascketRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 
 import java.util.Optional;
 
@@ -28,14 +21,21 @@ public class RedisTest {
     @Test
     public void addValue() {
 
-        ShopBascket bascket = new ShopBascket("token");
-        bascket.addButtonClick();
+
+        BascketProduct bascketProduct = new BascketProduct(1L, "yeon 에어 맥북", "http://www.naver.com", 10000);
+        BascketProduct bascketProduct1 = new BascketProduct(2L, "Honux 의 건담", "http://www.naver.com", 9000);
+
+        ShopBasket bascket = new ShopBasket(1L);
+        bascket.addProduct(bascketProduct);
+        bascket.addProduct(bascketProduct1);
+        bascket.getProduct(0).addButtonClick();
 
         shopBascketRepository.save(bascket);
 
 
-        Optional<ShopBascket> token = shopBascketRepository.findById("token");
-        Assertions.assertEquals(token.get().getProductCount(), 1);
+        Optional<ShopBasket> token = shopBascketRepository.findById(1L);
+        Assertions.assertEquals(token.get().getProduct(0).getProductCount(), 1);
+        Assertions.assertEquals(token.get().getProduct(1).getProductName(), "Honux 의 건담");
     }
 
 }
