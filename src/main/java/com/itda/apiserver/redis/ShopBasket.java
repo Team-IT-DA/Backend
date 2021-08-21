@@ -12,7 +12,6 @@ import java.util.List;
 @Getter
 @Setter
 @RedisHash("bascket")
-@AllArgsConstructor
 @NoArgsConstructor
 public class ShopBasket implements Serializable {
 
@@ -24,8 +23,9 @@ public class ShopBasket implements Serializable {
         this.userId = userId;
     }
 
-    public Long getUserId() {
-        return userId;
+    public ShopBasket(Long userId, List<BascketProduct> products) {
+        this.userId = userId;
+        this.products = products;
     }
 
     public void addProduct(BascketProduct product) {
