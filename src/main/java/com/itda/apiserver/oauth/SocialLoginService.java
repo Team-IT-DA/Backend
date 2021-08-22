@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class LoginService {
+public class SocialLoginService {
 
     private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
     private final NaverLoginService naverLoginService;
 
-    public TokenResponseDto socialLogin(String code) {
+    public TokenResponseDto login(String code) {
         UserInfo userInfo = naverLoginService.getUserInfoByCode(code);
         String email = userInfo.getEmail();
 
