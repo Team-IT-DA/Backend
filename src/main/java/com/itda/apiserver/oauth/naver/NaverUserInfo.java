@@ -24,7 +24,7 @@ public class NaverUserInfo implements UserInfo {
     @Override
     public User toUser() {
         return new User(response.name, response.mobile,
-                response.email, null, null);
+                response.email, response.id, null);
     }
 
 
