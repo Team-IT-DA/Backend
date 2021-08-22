@@ -2,13 +2,13 @@ package com.itda.apiserver.oauth.naver;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.itda.apiserver.domain.User;
-import com.itda.apiserver.oauth.SocialProfile;
+import com.itda.apiserver.oauth.UserInfo;
 import lombok.Getter;
 import lombok.ToString;
 
 @Getter
 @ToString
-public class NaverUserInfo implements SocialProfile {
+public class NaverUserInfo implements UserInfo {
 
     @JsonProperty("resultcode")
     private String resultCode;
