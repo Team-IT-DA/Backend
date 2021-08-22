@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class OauthController {
 
-    private final LoginService loginService;
+    private final SocialLoginService socialLoginService;
 
     /**
      * @param code 클라이언트단에서 리소스서버에서 전달 받고 전송하는 authorization code
      */
     @GetMapping("/naver")
     public ApiResult<TokenResponseDto> naverLogin(@RequestParam String code) {
-        TokenResponseDto response = loginService.socialLogin(code);
+        TokenResponseDto response = socialLoginService.login(code);
         return ApiResult.ok(response);
     }
 }
