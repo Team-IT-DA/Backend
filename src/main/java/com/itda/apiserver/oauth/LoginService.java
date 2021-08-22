@@ -18,7 +18,7 @@ public class LoginService {
     private final NaverLoginService naverLoginService;
 
     public TokenResponseDto socialLogin(String code) {
-        SocialProfile userInfo = naverLoginService.getUserInfo(code);
+        UserInfo userInfo = naverLoginService.getUserInfoByCode(code);
         String email = userInfo.getEmail();
 
         if (isNewUser(email)) {
@@ -36,7 +36,7 @@ public class LoginService {
         return count == 0;
     }
 
-    private User signUp(SocialProfile userInfo) {
+    private User signUp(UserInfo userInfo) {
         return userRepository.save(userInfo.toUser());
     }
 }
