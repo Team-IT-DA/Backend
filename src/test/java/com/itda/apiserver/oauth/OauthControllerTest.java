@@ -26,13 +26,13 @@ public class OauthControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private LoginService loginService;
+    private SocialLoginService socialLoginService;
 
     @Test
     @DisplayName("네이버로 소셜로그인 하는 기능 테스트")
     void neverLogin() throws Exception {
 
-        when(loginService.socialLogin(anyString())).thenReturn(new TokenResponseDto("thisIsToken"));
+        when(socialLoginService.login(anyString())).thenReturn(new TokenResponseDto("thisIsToken"));
 
         mockMvc.perform(get("/api/login/naver")
                 .param("code", "authorizationCode"))

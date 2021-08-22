@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 public class LoginServiceTest {
 
     @Autowired
-    private LoginService loginService;
+    private SocialLoginService loginService;
 
     @MockBean
     private NaverLoginService naverLoginService;
@@ -38,18 +38,15 @@ public class LoginServiceTest {
     @Mock
     private User user;
 
-    @Mock
-    private SocialProfile socialProfile;
-
     @Test
     @DisplayName("네이버로 소셜 로그인 기능 테스트")
     void socialLogin() {
 
-        when(naverLoginService.getUserInfo(anyString())).thenReturn(naverUserInfo);
+        when(naverLoginService.getUserInfoByCode(anyString())).thenReturn(naverUserInfo);
         when(naverUserInfo.getEmail()).thenReturn("yeon@test.com");
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
 
-        loginService.socialLogin(anyString());
+        loginService.login(anyString());
 
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(tokenProvider, times(1)).createToken(anyLong());
