@@ -1,8 +1,7 @@
 package com.itda.apiserver.oauth.naver;
 
-import com.itda.apiserver.oauth.UserInfo;
+import com.itda.apiserver.oauth.OauthProvider;
 
-public interface NaverLoginService {
+public interface NaverLoginService extends OauthProvider {
 
-    UserInfo getUserInfoByCode(String code);
 }

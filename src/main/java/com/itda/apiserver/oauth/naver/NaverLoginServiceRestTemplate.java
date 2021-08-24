@@ -2,7 +2,6 @@ package com.itda.apiserver.oauth.naver;
 
 import com.itda.apiserver.exception.InvalidTokenException;
 import com.itda.apiserver.oauth.AccessToken;
-import com.itda.apiserver.oauth.OauthProvider;
 import com.itda.apiserver.oauth.UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,7 @@ import java.net.URI;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class NaverLoginServiceRestTemplate implements OauthProvider, NaverLoginService {
+public class NaverLoginServiceRestTemplate implements NaverLoginService {
 
     private final String GRANT_TYPE = "authorization_code";
     private final String ACCESS_TOKEN_URI = "https://nid.naver.com/oauth2.0/token";
@@ -33,19 +32,18 @@ public class NaverLoginServiceRestTemplate implements OauthProvider, NaverLoginS
     private final RestTemplate restTemplate;
 
     @Override
-    public UserInfo getUserInfoByCode(String code) {
+    public UserInfo requestUserInfo(String code) {
 
-        AccessToken accessToken = getAccessToken(code);
+        String accessToken = getAccessToken(code).value();
 
-        if (accessToken.value() == null) {
-            throw new InvalidTokenException(accessToken.getErrorDescription());
+        if (accessToken == null) {
+            throw new InvalidTokenException();
         }
 
-        return getUserInfo(accessToken.value());
+        return getUserInfo(accessToken);
     }
 
-    @Override
-    public AccessToken getAccessToken(String code) {
+    private AccessToken getAccessToken(String code) {
 
         URI uri = UriComponentsBuilder.fromHttpUrl(ACCESS_TOKEN_URI)
                 .queryParam("grant_type", GRANT_TYPE)
@@ -60,8 +58,7 @@ public class NaverLoginServiceRestTemplate implements OauthProvider, NaverLoginS
         return naverAccessToken;
     }
 
-    @Override
-    public UserInfo getUserInfo(String accessToken) {
+    private UserInfo getUserInfo(String accessToken) {
 
         HttpHeaders header = new HttpHeaders();
         header.add("Authorization", "Bearer " + accessToken);
