@@ -39,4 +39,17 @@ public class OauthControllerTest {
                 .andExpect(jsonPath("$.data.token").exists())
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("카카오로 소셜로그인 하는 기능 테스트")
+    void kakaoLogin() throws Exception {
+
+        when(socialLoginService.login("authorizationCode", SocialResourceServer.KAKAO)).thenReturn(new TokenResponseDto("thisIsToken"));
+
+        mockMvc.perform(get("/api/login/kakao")
+                .param("code", "authorizationCode"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.token").exists())
+                .andDo(print());
+    }
 }
