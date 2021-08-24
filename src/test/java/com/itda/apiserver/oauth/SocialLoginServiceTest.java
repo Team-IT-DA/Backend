@@ -61,4 +61,20 @@ public class SocialLoginServiceTest {
         verify(tokenProvider, times(1)).createToken(anyLong());
 
     }
+
+    @Test
+    @DisplayName("카카오로 소셜 로그인 기능 테스트")
+    void kakaoLogin() {
+
+        when(kakaoLoginService.requestUserInfo(anyString())).thenReturn(kakaoUserInfo);
+        when(kakaoUserInfo.getEmail()).thenReturn("yeon@kakao.com");
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
+
+        loginService.login(anyString(), SocialResourceServer.KAKAO);
+
+        verify(kakaoLoginService, times(1)).requestUserInfo(anyString());
+        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(tokenProvider, times(1)).createToken(anyLong());
+
+    }
 }
