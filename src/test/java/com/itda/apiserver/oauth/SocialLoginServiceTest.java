@@ -2,6 +2,8 @@ package com.itda.apiserver.oauth;
 
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.jwt.TokenProvider;
+import com.itda.apiserver.oauth.kakao.KakaoLoginService;
+import com.itda.apiserver.oauth.kakao.KakaoUserInfo;
 import com.itda.apiserver.oauth.naver.NaverLoginService;
 import com.itda.apiserver.oauth.naver.NaverUserInfo;
 import com.itda.apiserver.repository.UserRepository;
@@ -18,13 +20,16 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class LoginServiceTest {
+public class SocialLoginServiceTest {
 
     @Autowired
     private SocialLoginService loginService;
 
     @MockBean
     private NaverLoginService naverLoginService;
+
+    @MockBean
+    private KakaoLoginService kakaoLoginService;
 
     @MockBean
     private UserRepository userRepository;
@@ -36,18 +41,22 @@ public class LoginServiceTest {
     private NaverUserInfo naverUserInfo;
 
     @Mock
+    private KakaoUserInfo kakaoUserInfo;
+
+    @Mock
     private User user;
 
     @Test
     @DisplayName("네이버로 소셜 로그인 기능 테스트")
-    void socialLogin() {
+    void naverLogin() {
 
-        when(naverLoginService.getUserInfoByCode(anyString())).thenReturn(naverUserInfo);
-        when(naverUserInfo.getEmail()).thenReturn("yeon@test.com");
+        when(naverLoginService.requestUserInfo(anyString())).thenReturn(naverUserInfo);
+        when(naverUserInfo.getEmail()).thenReturn("yeon@naver.com");
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
 
-        loginService.login(anyString());
+        loginService.login(anyString(), SocialResourceServer.NAVER);
 
+        verify(naverLoginService, times(1)).requestUserInfo(anyString());
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(tokenProvider, times(1)).createToken(anyLong());
 
