@@ -20,7 +20,7 @@ public class OauthController {
      */
     @GetMapping("/naver")
     public ApiResult<TokenResponseDto> naverLogin(@RequestParam String code) {
-        TokenResponseDto response = socialLoginService.login(code);
+        TokenResponseDto response = socialLoginService.login(code, SocialResourceServer.NAVER);
         return ApiResult.ok(response);
     }
 }
