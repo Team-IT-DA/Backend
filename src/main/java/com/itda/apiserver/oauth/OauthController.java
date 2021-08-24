@@ -23,4 +23,10 @@ public class OauthController {
         TokenResponseDto response = socialLoginService.login(code, SocialResourceServer.NAVER);
         return ApiResult.ok(response);
     }
+
+    @GetMapping("/kakao")
+    public ApiResult<TokenResponseDto> kakaoLogin(@RequestParam String code) {
+        TokenResponseDto response = socialLoginService.login(code, SocialResourceServer.KAKAO);
+        return ApiResult.ok(response);
+    }
 }
