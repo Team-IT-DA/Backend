@@ -54,7 +54,7 @@ public class SocialLoginServiceTest {
         when(naverUserInfo.getEmail()).thenReturn("yeon@naver.com");
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
 
-        loginService.login(anyString(), SocialResourceServer.NAVER);
+        loginService.naverLogin(anyString());
 
         verify(naverLoginService, times(1)).requestUserInfo(anyString());
         verify(userRepository, times(1)).findByEmail(anyString());
@@ -70,7 +70,7 @@ public class SocialLoginServiceTest {
         when(kakaoUserInfo.getEmail()).thenReturn("yeon@kakao.com");
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
 
-        loginService.login(anyString(), SocialResourceServer.KAKAO);
+        loginService.kakaoLogin(anyString());
 
         verify(kakaoLoginService, times(1)).requestUserInfo(anyString());
         verify(userRepository, times(1)).findByEmail(anyString());
