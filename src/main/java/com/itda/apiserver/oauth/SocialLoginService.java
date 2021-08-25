@@ -19,9 +19,16 @@ public class SocialLoginService {
     private final NaverLoginService naverLoginService;
     private final KakaoLoginService kakaoLoginService;
 
-    public TokenResponseDto login(String code, SocialResourceServer socialServer) {
+    public TokenResponseDto naverLogin(String code) {
+        return login(code, naverLoginService);
+    }
 
-        OauthProvider oauthProvider = getOauthProvider(socialServer);
+    public TokenResponseDto kakaoLogin(String code) {
+        return login(code, kakaoLoginService);
+    }
+
+    private TokenResponseDto login(String code, OauthProvider oauthProvider) {
+
         UserInfo userInfo = oauthProvider.requestUserInfo(code);
         String email = userInfo.getEmail();
 
@@ -33,10 +40,6 @@ public class SocialLoginService {
         String token = tokenProvider.createToken(user.getId());
 
         return new TokenResponseDto(token);
-    }
-
-    private OauthProvider getOauthProvider(SocialResourceServer socialServer) {
-        return socialServer == SocialResourceServer.NAVER ? naverLoginService : kakaoLoginService;
     }
 
     private boolean isNewUser(String email) {
