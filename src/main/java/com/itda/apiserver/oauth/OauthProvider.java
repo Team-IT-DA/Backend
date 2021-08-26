@@ -2,7 +2,7 @@ package com.itda.apiserver.oauth;
 
 public interface OauthProvider {
 
-    void login();
+    UserInfo getUserInfo(String accessToken);
 
-    String getAccessToken();
+    AccessToken getAccessToken(String code);
 }
