@@ -20,7 +20,13 @@ public class OauthController {
      */
     @GetMapping("/naver")
     public ApiResult<TokenResponseDto> naverLogin(@RequestParam String code) {
-        TokenResponseDto response = socialLoginService.login(code);
+        TokenResponseDto response = socialLoginService.naverLogin(code);
+        return ApiResult.ok(response);
+    }
+
+    @GetMapping("/kakao")
+    public ApiResult<TokenResponseDto> kakaoLogin(@RequestParam String code) {
+        TokenResponseDto response = socialLoginService.kakaoLogin(code);
         return ApiResult.ok(response);
     }
 }

@@ -1,4 +1,4 @@
-package com.itda.apiserver.oauth.naver;
+package com.itda.apiserver.oauth.kakao;
 
 import com.itda.apiserver.exception.InvalidTokenException;
 import com.itda.apiserver.oauth.AccessToken;
@@ -10,24 +10,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class NaverLoginService implements OauthProvider {
+public class KakaoLoginService implements OauthProvider {
 
     private final String GRANT_TYPE = "authorization_code";
-    private final String ACCESS_TOKEN_URI = "https://nid.naver.com/oauth2.0/token";
-    private final String USER_INFO_URI = "https://openapi.naver.com/v1/nid/me";
+    private final String REDIRECT_URI = "http://localhost:8080/login/kakao/callback";
+    private final String ACCESS_TOKEN_URI = "https://kauth.kakao.com/oauth/token";
+    private final String USER_INFO_URI = "https://kapi.kakao.com//v2/user/me";
 
-    @Value("${oauth.naver.client_id}")
+    @Value("${oauth.kakao.client_id}")
     private String clientId;
 
-    @Value("${oauth.naver.secret}")
+    @Value("${oauth.kakao.secret}")
     private String clientSecret;
 
     private final RestTemplate restTemplate;
@@ -46,17 +46,17 @@ public class NaverLoginService implements OauthProvider {
 
     private AccessToken getAccessToken(String code) {
 
-        URI uri = UriComponentsBuilder.fromHttpUrl(ACCESS_TOKEN_URI)
-                .queryParam("grant_type", GRANT_TYPE)
-                .queryParam("client_id", clientId)
-                .queryParam("client_secret", clientSecret)
-                .queryParam("code", code)
-                .build()
-                .toUri();
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", GRANT_TYPE);
+        params.add("client_id", clientId);
+        params.add("client_secret", clientSecret);
+        params.add("redirect_uri", REDIRECT_URI);
+        params.add("code", code);
 
-        NaverAccessToken naverAccessToken = restTemplate.getForObject(uri, NaverAccessToken.class);
-        log.info("access token: {}", naverAccessToken);
-        return naverAccessToken;
+
+        AccessToken accessToken = restTemplate.postForObject(ACCESS_TOKEN_URI, params, KakaoAccessTokenResponse.class);
+        log.info("access token: {}", accessToken.toString());
+        return accessToken;
     }
 
     private UserInfo getUserInfo(String accessToken) {
@@ -64,6 +64,6 @@ public class NaverLoginService implements OauthProvider {
         HttpHeaders header = new HttpHeaders();
         header.add("Authorization", "Bearer " + accessToken);
 
-        return restTemplate.postForObject(USER_INFO_URI, new HttpEntity<>(header), NaverUserInfo.class);
+        return restTemplate.postForObject(USER_INFO_URI, new HttpEntity<>(header), KakaoUserInfo.class);
     }
 }

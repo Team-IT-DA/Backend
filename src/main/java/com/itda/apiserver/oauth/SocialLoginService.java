@@ -4,6 +4,7 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.TokenResponseDto;
 import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.jwt.TokenProvider;
+import com.itda.apiserver.oauth.kakao.KakaoLoginService;
 import com.itda.apiserver.oauth.naver.NaverLoginService;
 import com.itda.apiserver.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +17,19 @@ public class SocialLoginService {
     private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
     private final NaverLoginService naverLoginService;
+    private final KakaoLoginService kakaoLoginService;
 
-    public TokenResponseDto login(String code) {
-        UserInfo userInfo = naverLoginService.getUserInfoByCode(code);
+    public TokenResponseDto naverLogin(String code) {
+        return login(code, naverLoginService);
+    }
+
+    public TokenResponseDto kakaoLogin(String code) {
+        return login(code, kakaoLoginService);
+    }
+
+    private TokenResponseDto login(String code, OauthProvider oauthProvider) {
+
+        UserInfo userInfo = oauthProvider.requestUserInfo(code);
         String email = userInfo.getEmail();
 
         if (isNewUser(email)) {

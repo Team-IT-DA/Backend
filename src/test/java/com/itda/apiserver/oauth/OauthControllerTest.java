@@ -11,7 +11,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -32,9 +31,22 @@ public class OauthControllerTest {
     @DisplayName("네이버로 소셜로그인 하는 기능 테스트")
     void neverLogin() throws Exception {
 
-        when(socialLoginService.login(anyString())).thenReturn(new TokenResponseDto("thisIsToken"));
+        when(socialLoginService.naverLogin("authorizationCode")).thenReturn(new TokenResponseDto("thisIsToken"));
 
         mockMvc.perform(get("/api/login/naver")
+                .param("code", "authorizationCode"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.token").exists())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("카카오로 소셜로그인 하는 기능 테스트")
+    void kakaoLogin() throws Exception {
+
+        when(socialLoginService.kakaoLogin("authorizationCode")).thenReturn(new TokenResponseDto("thisIsToken"));
+
+        mockMvc.perform(get("/api/login/kakao")
                 .param("code", "authorizationCode"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.token").exists())
