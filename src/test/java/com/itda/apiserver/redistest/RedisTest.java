@@ -22,20 +22,22 @@ public class RedisTest {
     public void addValue() {
 
 
-        BascketProduct bascketProduct = new BascketProduct(1L, "yeon 에어 맥북", "http://www.naver.com", 10000);
-        BascketProduct bascketProduct1 = new BascketProduct(2L, "Honux 의 건담", "http://www.naver.com", 9000);
+        BascketProduct bascketProduct = new BascketProduct(1L, "yeon 에어 맥북", 10000, 3000, "http://www.naver.com", 0, "roach");
+        BascketProduct bascketProduct1 = new BascketProduct(2L, "Honux 의 건담", 9000, 2000, "http://www.naver.com", 1, "roach");
 
         ShopBasket bascket = new ShopBasket(1L);
+
         bascket.addProduct(bascketProduct);
         bascket.addProduct(bascketProduct1);
-        bascket.getProduct(0).addButtonClick();
+
+        bascket.getProduct(bascketProduct.getProductId()).addButtonClick();
 
         shopBascketRepository.save(bascket);
 
 
         Optional<ShopBasket> token = shopBascketRepository.findById(1L);
-        Assertions.assertEquals(token.get().getProduct(0).getProductCount(), 1);
-        Assertions.assertEquals(token.get().getProduct(1).getProductName(), "Honux 의 건담");
+        Assertions.assertEquals(token.get().getProduct(bascketProduct.getProductId()).getProductCount(), 1);
+        Assertions.assertEquals(token.get().getProduct(bascketProduct1.getProductId()).getProductName(), "Honux 의 건담");
     }
 
 }
