@@ -3,7 +3,7 @@ package com.itda.apiserver.controller;
 import com.itda.apiserver.annotation.LoginRequired;
 import com.itda.apiserver.annotation.UserId;
 import com.itda.apiserver.dto.ApiResult;
-import com.itda.apiserver.dto.CartRequestDto;
+import com.itda.apiserver.dto.CartProduct;
 import com.itda.apiserver.redis.ShopBasket;
 import com.itda.apiserver.service.CartService;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,15 @@ public class CartController {
 
     @PostMapping
     @LoginRequired
-    public ApiResult<Void> addProductToCart(@RequestBody CartRequestDto cartRequestDto, @UserId Long userId) {
-        cartService.addProduct(cartRequestDto, userId);
+    public ApiResult<Void> updateProductToCart(@RequestBody CartProduct cartProduct, @UserId Long userId) {
+        cartService.addProduct(cartProduct, userId);
+        return ApiResult.ok(null);
+    }
+
+    @DeleteMapping("/{productId}")
+    @LoginRequired
+    public ApiResult<Void> deleteProductFromCart(@RequestParam Long productId, @UserId Long userId) {
+        cartService.deleteProduct(productId, userId);
         return ApiResult.ok(null);
     }
 
