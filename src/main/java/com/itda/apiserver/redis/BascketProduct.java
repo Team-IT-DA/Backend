@@ -14,15 +14,10 @@ public class BascketProduct implements Serializable {
     private Long productId;
     private String productName;
     private int price;
+    private int shippingFee;
     private String imgUrl;
     private int productCount = 0;
-
-    public BascketProduct(Long productId, String productName, String imgUrl, int price) {
-        this.productId = productId;
-        this.productName = productName;
-        this.imgUrl = imgUrl;
-        this.price = price;
-    }
+    private String sellerName;
 
     public void addButtonClick() {
         productCount++;
