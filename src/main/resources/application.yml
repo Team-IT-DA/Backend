@@ -21,11 +21,10 @@ jwt:
 
 oauth:
   naver:
-    client_id: 1234
-    secret: 2134
-
+    client_id: boxzCRuNeP0Gvv5BGhcM
+    secret: VxBPfkIQ2t
   kakao:
-    client_id: 1234
-    secret: 2134
+    client_id: ee6e1a4937fbdd837c05bf548215a3ae
+    secret: QLSuY5JZW7zxIu28Q64gBXLt0Gkon7RO
 
 
