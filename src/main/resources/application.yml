@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/itda?autoReconnect=true
+    url: jdbc:mysql://34.64.87.227:3306/itda?autoReconnect=true
     username: root
     password: 1234
   jpa:
@@ -12,11 +12,20 @@ spring:
 
   redis:
     port: 6379
-    host: localhost
+    host: 34.125.189.106
     password: itda
 
 jwt:
   secret: yeon
   token-validity-in-seconds: 86400
+
+oauth:
+  naver:
+    client_id: 1234
+    secret: 2134
+
+  kakao:
+    client_id: 1234
+    secret: 2134
 
 
