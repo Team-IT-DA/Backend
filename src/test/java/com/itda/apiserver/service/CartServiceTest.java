@@ -1,6 +1,7 @@
 package com.itda.apiserver.service;
 
 import com.itda.apiserver.domain.Product;
+import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.CartProduct;
 import com.itda.apiserver.exception.NotFoundProductFromCartException;
 import com.itda.apiserver.redis.ShopBasket;
@@ -40,11 +41,15 @@ class CartServiceTest {
     @MockBean
     private Product product;
 
+    @MockBean
+    private User user;
+
     @Test
     @DisplayName("장바구니에 품목을 추가합니다.")
     void addProduct() {
 
         when(cartRequestDto.getId()).thenReturn(1L);
+        when(product.getSeller()).thenReturn(user);
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
         cartService.addProduct(cartRequestDto, 1L);
