@@ -1,13 +1,7 @@
-FROM ubuntu:16.04
+FROM openjdk:11-jdk
 
 EXPOSE 8080
 
-RUN apt-get update
+VOLUME /tmp
 
-RUN apt-get install -y default-jdk
-
-ARG JAR_FILE=build/lib/api-server-0.0.1-SNAPSHOT.jar
-
-ADD ${JAR_FILE} itda.jar
-
-ENTRYPOINT ["java", "-jar", "/itda.jar"]
+ENTRYPOINT ["java", "-jar", "build/lib/api-server-0.0.1-SNAPSHOT.jar"]
