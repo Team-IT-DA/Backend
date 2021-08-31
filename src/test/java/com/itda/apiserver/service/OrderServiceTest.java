@@ -6,6 +6,7 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.OrderProductRequest;
 import com.itda.apiserver.dto.OrderRequestDto;
 import com.itda.apiserver.dto.ShippingInfoDto;
+import com.itda.apiserver.exception.OrderDuplicationException;
 import com.itda.apiserver.repository.OrderHistoryRepository;
 import com.itda.apiserver.repository.OrderSheetRepository;
 import com.itda.apiserver.repository.UserRepository;
@@ -19,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
@@ -70,5 +72,20 @@ public class OrderServiceTest {
 
     }
 
+    @Test
+    @DisplayName("주문 요청이 중복으로 들어오면 예외 발생")
+    void duplicatedOrder() {
 
+        when(orderValidationService.isDuplicatedOrder(anyLong())).thenReturn(true);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(orderRequest.getShippingAddress()).thenReturn(shippingInfoRequest);
+        when(orderRequest.getOrderList()).thenReturn(orderProductList);
+
+        assertThrows(OrderDuplicationException.class, () -> orderService.order(1L, orderRequest));
+
+        verify(orderValidationService, times(1)).isDuplicatedOrder(anyLong());
+        verify(orderSheetRepository, times(0)).save(any(OrderSheet.class));
+        verify(orderHistoryRepository, times(0)).save(any(OrderHistory.class));
+        verify(orderValidationService, times(0)).save(anyLong());
+    }
 }
