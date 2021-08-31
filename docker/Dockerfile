@@ -5,7 +5,7 @@ EXPOSE 8000
 VOLUME /tmp
 
 RUN apt update
-RUN apt install openjdk-11-jdk
+RUN apt install -y openjdk-11-jdk
 RUN java -version
 
 RUN git clone https://github.com/Team-IT-DA/Backend.git
