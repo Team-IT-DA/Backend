@@ -1,12 +1,14 @@
-FROM openjdk:11-jdk
+FROM debian:stable
 
 EXPOSE 8000
 
 VOLUME /tmp
 
-RUN git clone https://github.com/Team-IT-DA/Backend.git
+RUN apt update
+RUN apt install openjdk-11-jdk
+RUN java -version
 
-RUN ls -a
+RUN git clone https://github.com/Team-IT-DA/Backend.git
 
 RUN Backend/gradlew build
 
