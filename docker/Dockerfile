@@ -4,9 +4,9 @@ EXPOSE 8000
 
 VOLUME /tmp
 
-RUN ls -a
-
 RUN git clone https://github.com/Team-IT-DA/Backend.git
+
+RUN ls -a
 
 RUN BackEnd/gradlew build
 
