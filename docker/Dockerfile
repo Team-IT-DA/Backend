@@ -1,7 +1,11 @@
 FROM openjdk:11-jdk
 
-EXPOSE 8080
+EXPOSE 8000
 
 VOLUME /tmp
 
-ENTRYPOINT ["java", "-jar", "build/lib/api-server-0.0.1-SNAPSHOT.jar"]
+RUN git clone https://github.com/Team-IT-DA/Backend.git
+
+RUN BackEnd/gradlew build
+
+ENTRYPOINT ["java", "-jar", "BackEnd/build/libs/api-server-0.0.1-SNAPSHOT.jar"]
