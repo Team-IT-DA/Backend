@@ -7,6 +7,7 @@ VOLUME /tmp
 RUN apt update
 RUN apt install -y openjdk-11-jdk
 RUN java -version
+RUN apt install -y git
 
 RUN git clone https://github.com/Team-IT-DA/Backend.git
 
