@@ -1,19 +1,17 @@
 package com.itda.apiserver.domain;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class ShippingInfo extends Core {
 
-    @ManyToOne
-    @JoinColumn(name = "address_id")
+    @Embedded
     private Address address;
 
     @ManyToOne

@@ -1,17 +1,18 @@
 package com.itda.apiserver.domain;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
-@Entity
+@Embeddable
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Address {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Column(name = "region_1depth_name")
     private String regionOneDepthName;
@@ -22,12 +23,8 @@ public class Address {
     @Column(name = "region_3depth_name")
     private String regionThreeDepthName;
 
-    private String roadName;
-    private Boolean mountainYn;
-    private Boolean undergroundYn;
-    private Integer mainBuildingNo;
-    private Integer subBuildingNo;
-    private Integer zoneNo;
-    private String latitude;
-    private String longitude;
+    private int mainBuildingNo;
+    private int subBuildingNo;
+    private int zoneNo;
+
 }
