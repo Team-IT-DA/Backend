@@ -21,4 +21,9 @@ public class OrderHistory extends Core {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public OrderHistory(OrderSheet orderSheet, User user) {
+        this.orderSheet = orderSheet;
+        this.user = user;
+    }
 }
