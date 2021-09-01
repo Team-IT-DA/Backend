@@ -37,7 +37,7 @@ public class OrderService {
     @Transactional
     public OrderResponseDto order(Long userId, OrderRequestDto orderRequest) {
 
-        if (orderValidationService.isDuplicatedOrder(userId)) {
+        if (orderValidationService.isDuplicatedOrder()) {
             throw new OrderDuplicationException();
         }
 

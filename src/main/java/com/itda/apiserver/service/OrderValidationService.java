@@ -1,21 +1,25 @@
 package com.itda.apiserver.service;
 
-import com.itda.apiserver.redis.OrderValidation;
-import com.itda.apiserver.repository.OrderValidationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class OrderValidationService {
 
-    private final OrderValidationRepository orderValidationRepository;
+    private static final String REDIS_KEY = "order";
 
-    public boolean isDuplicatedOrder(Long userId) {
-        return orderValidationRepository.findById(userId).isPresent();
+    private final StringRedisTemplate stringRedisTemplate;
+
+
+    public boolean isDuplicatedOrder() {
+        return stringRedisTemplate.opsForValue().get(REDIS_KEY) != null;
     }
 
     public void save(Long userId) {
-        orderValidationRepository.save(new OrderValidation(userId));
+        stringRedisTemplate.opsForValue().set(REDIS_KEY, String.valueOf(userId), 1, TimeUnit.SECONDS);
     }
 }
