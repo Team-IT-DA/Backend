@@ -58,14 +58,14 @@ public class OrderServiceTest {
     @DisplayName("주문 기능 테스트")
     void order() {
 
-        when(orderValidationService.isDuplicatedOrder(anyLong())).thenReturn(false);
+        when(orderValidationService.isDuplicatedOrder()).thenReturn(false);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(orderRequest.getShippingAddress()).thenReturn(shippingInfoRequest);
         when(orderRequest.getOrderList()).thenReturn(orderProductList);
 
         orderService.order(1L, orderRequest);
 
-        verify(orderValidationService, times(1)).isDuplicatedOrder(anyLong());
+        verify(orderValidationService, times(1)).isDuplicatedOrder();
         verify(orderSheetRepository, times(1)).save(any(OrderSheet.class));
         verify(orderHistoryRepository, times(1)).save(any(OrderHistory.class));
         verify(orderValidationService, times(1)).save(anyLong());
@@ -76,14 +76,14 @@ public class OrderServiceTest {
     @DisplayName("주문 요청이 중복으로 들어오면 예외 발생")
     void duplicatedOrder() {
 
-        when(orderValidationService.isDuplicatedOrder(anyLong())).thenReturn(true);
+        when(orderValidationService.isDuplicatedOrder()).thenReturn(true);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(orderRequest.getShippingAddress()).thenReturn(shippingInfoRequest);
         when(orderRequest.getOrderList()).thenReturn(orderProductList);
 
         assertThrows(OrderDuplicationException.class, () -> orderService.order(1L, orderRequest));
 
-        verify(orderValidationService, times(1)).isDuplicatedOrder(anyLong());
+        verify(orderValidationService, times(1)).isDuplicatedOrder();
         verify(orderSheetRepository, times(0)).save(any(OrderSheet.class));
         verify(orderHistoryRepository, times(0)).save(any(OrderHistory.class));
         verify(orderValidationService, times(0)).save(anyLong());
