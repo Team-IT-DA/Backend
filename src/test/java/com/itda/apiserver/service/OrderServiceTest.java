@@ -2,13 +2,14 @@ package com.itda.apiserver.service;
 
 import com.itda.apiserver.domain.OrderHistory;
 import com.itda.apiserver.domain.OrderSheet;
+import com.itda.apiserver.domain.ShippingInfo;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.OrderProductRequest;
 import com.itda.apiserver.dto.OrderRequestDto;
-import com.itda.apiserver.dto.ShippingInfoDto;
 import com.itda.apiserver.exception.OrderDuplicationException;
 import com.itda.apiserver.repository.OrderHistoryRepository;
 import com.itda.apiserver.repository.OrderSheetRepository;
+import com.itda.apiserver.repository.ShippingInfoRepository;
 import com.itda.apiserver.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,9 @@ public class OrderServiceTest {
     @MockBean
     private OrderValidationService orderValidationService;
 
+    @MockBean
+    private ShippingInfoRepository shippingInfoRepository;
+
     @Mock
     private User user;
 
@@ -49,10 +53,10 @@ public class OrderServiceTest {
     private OrderRequestDto orderRequest;
 
     @Mock
-    private ShippingInfoDto shippingInfoRequest;
+    private List<OrderProductRequest> orderProductList;
 
     @Mock
-    private List<OrderProductRequest> orderProductList;
+    private ShippingInfo shippingInfo;
 
     @Test
     @DisplayName("주문 기능 테스트")
@@ -60,7 +64,7 @@ public class OrderServiceTest {
 
         when(orderValidationService.isDuplicatedOrder()).thenReturn(false);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(orderRequest.getShippingAddress()).thenReturn(shippingInfoRequest);
+        when(shippingInfoRepository.findById(anyLong())).thenReturn(Optional.of(shippingInfo));
         when(orderRequest.getOrderList()).thenReturn(orderProductList);
 
         orderService.order(1L, orderRequest);
@@ -78,7 +82,7 @@ public class OrderServiceTest {
 
         when(orderValidationService.isDuplicatedOrder()).thenReturn(true);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(orderRequest.getShippingAddress()).thenReturn(shippingInfoRequest);
+        when(shippingInfoRepository.findById(anyLong())).thenReturn(Optional.of(shippingInfo));
         when(orderRequest.getOrderList()).thenReturn(orderProductList);
 
         assertThrows(OrderDuplicationException.class, () -> orderService.order(1L, orderRequest));

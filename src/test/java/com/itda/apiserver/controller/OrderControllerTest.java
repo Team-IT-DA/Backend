@@ -59,17 +59,6 @@ class OrderControllerTest {
     }
 
     private OrderRequestDto getOrderRequest() {
-        ShippingInfoDto shippingInfoDto = new ShippingInfoDto();
-        shippingInfoDto.setRegionOneDepthName("서울특별시");
-        shippingInfoDto.setRegionTwoDepthName("강남구");
-        shippingInfoDto.setRegionThreeDepthName("역삼동");
-        shippingInfoDto.setPhone("01011112222");
-        shippingInfoDto.setConsignee("호눅스");
-        shippingInfoDto.setMessage("집 앞에 두고 가세요");
-        shippingInfoDto.setZoneNo(12345);
-        shippingInfoDto.setMainBuildingNo(40);
-        shippingInfoDto.setSubBuildingNo(4);
-        shippingInfoDto.setDefaultAddrYn(true);
 
         List<OrderProductRequest> orderProductList = new ArrayList<>();
         OrderProductRequest orderProduct1 = new OrderProductRequest();
@@ -83,7 +72,7 @@ class OrderControllerTest {
         orderProductList.add(orderProduct2);
 
         OrderRequestDto orderRequest = new OrderRequestDto();
-        orderRequest.setShippingAddress(shippingInfoDto);
+        orderRequest.setShippingAddressId(1L);
         orderRequest.setOrderList(orderProductList);
         orderRequest.setOrderPrice(150000);
         orderRequest.setTotalPrice(156000);
