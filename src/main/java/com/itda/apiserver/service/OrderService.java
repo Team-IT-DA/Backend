@@ -7,11 +7,9 @@ import com.itda.apiserver.dto.OrderRequestDto;
 import com.itda.apiserver.dto.OrderResponseDto;
 import com.itda.apiserver.exception.OrderDuplicationException;
 import com.itda.apiserver.exception.ProductNotFountException;
+import com.itda.apiserver.exception.ShippingInfoNotFoundException;
 import com.itda.apiserver.exception.UserNotFoundException;
-import com.itda.apiserver.repository.OrderHistoryRepository;
-import com.itda.apiserver.repository.OrderSheetRepository;
-import com.itda.apiserver.repository.ProductRepository;
-import com.itda.apiserver.repository.UserRepository;
+import com.itda.apiserver.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +26,7 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final OrderHistoryRepository orderHistoryRepository;
     private final OrderSheetRepository orderSheetRepository;
+    private final ShippingInfoRepository shippingInfoRepository;
     private final OrderValidationService orderValidationService;
 
     /**
@@ -43,18 +42,8 @@ public class OrderService {
 
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        Address address = Address.builder()
-                .regionOneDepthName(orderRequest.getShippingAddress().getRegionOneDepthName())
-                .regionTwoDepthName(orderRequest.getShippingAddress().getRegionTwoDepthName())
-                .regionThreeDepthName(orderRequest.getShippingAddress().getRegionThreeDepthName())
-                .mainBuildingNo(orderRequest.getShippingAddress().getMainBuildingNo())
-                .subBuildingNo(orderRequest.getShippingAddress().getSubBuildingNo())
-                .zoneNo(orderRequest.getShippingAddress().getZoneNo())
-                .build();
-
-        ShippingInfo shippingInfo = new ShippingInfo(address, user, orderRequest.getShippingAddress().getConsignee(),
-                orderRequest.getShippingAddress().getMessage(), orderRequest.getShippingAddress().getPhone(),
-                orderRequest.getShippingAddress().isDefaultAddrYn());
+        ShippingInfo shippingInfo = shippingInfoRepository.findById(orderRequest.getShippingAddressId())
+                .orElseThrow(ShippingInfoNotFoundException::new);
 
         List<Order> orders = getOrders(orderRequest.getOrderList());
 

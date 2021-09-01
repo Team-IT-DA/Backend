@@ -13,6 +13,6 @@ public class OrderRequestDto {
     private int orderPrice;
     private int shippingFee;
     private int totalPrice;
-    private ShippingInfoDto shippingAddress;
+    private Long shippingAddressId;
 
 }
