@@ -40,6 +40,8 @@ public class OrderService {
             throw new OrderDuplicationException();
         }
 
+        orderValidationService.save(userId);
+
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         ShippingInfo shippingInfo = shippingInfoRepository.findById(orderRequest.getShippingAddressId())
@@ -52,8 +54,6 @@ public class OrderService {
 
         OrderHistory orderHistory = new OrderHistory(orderSheet, user);
         orderHistoryRepository.save(orderHistory);
-
-        orderValidationService.save(userId);
 
         return getOrderResponse(orders);
     }
