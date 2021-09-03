@@ -10,7 +10,7 @@ import java.io.Serializable;
 @RedisHash("product")
 @AllArgsConstructor
 @NoArgsConstructor
-public class BascketProduct implements Serializable {
+public class BasketProduct implements Serializable {
     private Long productId;
     private String productName;
     private int price;

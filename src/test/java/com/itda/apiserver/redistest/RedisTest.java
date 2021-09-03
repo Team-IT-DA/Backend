@@ -1,8 +1,8 @@
 package com.itda.apiserver.redistest;
 
-import com.itda.apiserver.redis.BascketProduct;
+import com.itda.apiserver.redis.BasketProduct;
 import com.itda.apiserver.redis.ShopBasket;
-import com.itda.apiserver.repository.ShopBascketRepository;
+import com.itda.apiserver.repository.ShopBasketRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,29 +15,29 @@ import java.util.Optional;
 public class RedisTest {
 
     @Autowired
-    ShopBascketRepository shopBascketRepository;
+    ShopBasketRepository shopBasketRepository;
 
     @DisplayName("Redis 에 key-value 로 값을 넣어본다.")
     @Test
     public void addValue() {
 
 
-        BascketProduct bascketProduct = new BascketProduct(1L, "yeon 에어 맥북", 10000, 3000, "http://www.naver.com", 0, "roach");
-        BascketProduct bascketProduct1 = new BascketProduct(2L, "Honux 의 건담", 9000, 2000, "http://www.naver.com", 1, "roach");
+        BasketProduct basketProduct = new BasketProduct(1L, "yeon 에어 맥북", 10000, 3000, "http://www.naver.com", 0, "roach");
+        BasketProduct basketProduct1 = new BasketProduct(2L, "Honux 의 건담", 9000, 2000, "http://www.naver.com", 1, "roach");
 
         ShopBasket bascket = new ShopBasket(1L);
 
-        bascket.addProduct(bascketProduct);
-        bascket.addProduct(bascketProduct1);
+        bascket.addProduct(basketProduct);
+        bascket.addProduct(basketProduct1);
 
-        bascket.getProduct(bascketProduct.getProductId()).addButtonClick();
+        bascket.getProduct(basketProduct.getProductId()).addButtonClick();
 
-        shopBascketRepository.save(bascket);
+        shopBasketRepository.save(bascket);
 
 
-        Optional<ShopBasket> token = shopBascketRepository.findById(1L);
-        Assertions.assertEquals(token.get().getProduct(bascketProduct.getProductId()).getProductCount(), 1);
-        Assertions.assertEquals(token.get().getProduct(bascketProduct1.getProductId()).getProductName(), "Honux 의 건담");
+        Optional<ShopBasket> token = shopBasketRepository.findById(1L);
+        Assertions.assertEquals(token.get().getProduct(basketProduct.getProductId()).getProductCount(), 1);
+        Assertions.assertEquals(token.get().getProduct(basketProduct1.getProductId()).getProductName(), "Honux 의 건담");
     }
 
 }

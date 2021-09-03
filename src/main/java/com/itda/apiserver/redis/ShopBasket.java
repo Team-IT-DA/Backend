@@ -10,19 +10,19 @@ import java.util.Map;
 
 @Getter
 @Setter
-@RedisHash("bascket")
+@RedisHash("basket")
 @NoArgsConstructor
 public class ShopBasket implements Serializable {
 
     @Id
     private Long userId;
-    private Map<Long, BascketProduct> products = new HashMap();
+    private Map<Long, BasketProduct> products = new HashMap();
 
     public ShopBasket(Long userId) {
         this.userId = userId;
     }
 
-    public void addProduct(BascketProduct product) {
+    public void addProduct(BasketProduct product) {
         products.put(product.getProductId(), product);
     }
 
@@ -30,7 +30,7 @@ public class ShopBasket implements Serializable {
         products.remove(productId);
     }
 
-    public BascketProduct getProduct(Long productId) {
+    public BasketProduct getProduct(Long productId) {
         return products.get(productId);
     }
 
