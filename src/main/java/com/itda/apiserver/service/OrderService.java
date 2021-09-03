@@ -2,9 +2,7 @@ package com.itda.apiserver.service;
 
 import com.itda.apiserver.domain.*;
 import com.itda.apiserver.dto.OrderProductRequest;
-import com.itda.apiserver.dto.OrderProductResponse;
 import com.itda.apiserver.dto.OrderRequestDto;
-import com.itda.apiserver.dto.OrderResponseDto;
 import com.itda.apiserver.exception.OrderDuplicationException;
 import com.itda.apiserver.exception.ProductNotFountException;
 import com.itda.apiserver.exception.ShippingInfoNotFoundException;
@@ -34,7 +32,7 @@ public class OrderService {
      * OrderSheet: 유저가 주문한 주문 내역
      */
     @Transactional
-    public OrderResponseDto order(Long userId, OrderRequestDto orderRequest) {
+    public List<Order> order(Long userId, OrderRequestDto orderRequest) {
 
         if (orderValidationService.isDuplicatedOrder()) {
             throw new OrderDuplicationException();
@@ -55,7 +53,7 @@ public class OrderService {
         OrderHistory orderHistory = new OrderHistory(orderSheet, user);
         orderHistoryRepository.save(orderHistory);
 
-        return getOrderResponse(orders);
+        return orders;
     }
 
     private List<Order> getOrders(List<OrderProductRequest> orderList) {
@@ -68,21 +66,4 @@ public class OrderService {
                 }).collect(Collectors.toList());
     }
 
-    private OrderResponseDto getOrderResponse(List<Order> orders) {
-
-        int totalPrice = orders.stream()
-                .mapToInt(Order::getPricePerOrder)
-                .sum();
-
-        List<OrderProductResponse> orderProductResponses = orders.stream()
-                .map(order -> {
-                    Product product = order.getProduct();
-                    OrderProductResponse response =
-                            new OrderProductResponse(product.getTitle(), product.getId(), product.getPrice(), product.getDeliveryFee(),
-                                    order.getQuantity(), product.getBank(), product.getAccountHolder(), product.getAccount());
-                    return response;
-                }).collect(Collectors.toList());
-
-        return new OrderResponseDto(orderProductResponses, totalPrice);
-    }
 }
