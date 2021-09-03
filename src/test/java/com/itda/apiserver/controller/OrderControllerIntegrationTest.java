@@ -1,52 +1,56 @@
 package com.itda.apiserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itda.apiserver.dto.*;
-import com.itda.apiserver.jwt.TokenExtractor;
+import com.itda.apiserver.dto.OrderProductRequest;
+import com.itda.apiserver.dto.OrderRequestDto;
+import com.itda.apiserver.exception.OrderDuplicationException;
 import com.itda.apiserver.jwt.TokenProvider;
-import com.itda.apiserver.service.OrderService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(OrderController.class)
-@Import(value = {TokenProvider.class, TokenExtractor.class})
-class OrderControllerTest {
+@SpringBootTest
+@AutoConfigureMockMvc
+@Transactional
+class OrderControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @MockBean
-    private OrderService orderService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private TokenProvider tokenProvider;
 
+    private OrderRequestDto orderRequest;
+    private String token;
+
+    @BeforeEach
+    void setUp() throws InterruptedException {
+        orderRequest = getOrderRequest();
+        token = "Bearer " + tokenProvider.createToken(1L);
+        TimeUnit.SECONDS.sleep(1);
+    }
+
     @Test
+    @DisplayName("주문 기능 통합 테스트")
     void order() throws Exception {
-
-        Long userId = 1L;
-        OrderRequestDto orderRequest = getOrderRequest();
-        String token = "Bearer " + tokenProvider.createToken(userId);
-
-        when(orderService.order(anyLong(), any(OrderRequestDto.class))).thenReturn(getOrderResponse());
 
         mockMvc.perform(post("/api/order")
                 .header("Authorization", token)
@@ -56,6 +60,24 @@ class OrderControllerTest {
                 .andExpect(jsonPath("$.data.orderList").exists())
                 .andExpect(jsonPath("$.data.totalPrice").exists())
                 .andDo(print());
+    }
+
+    @Test
+    @DisplayName("주문 중복 요청 시 OrderDuplication 예외가 발생한다.")
+    void duplicatedOrder() throws Exception {
+
+        mockMvc.perform(post("/api/order")
+                .header("Authorization", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(orderRequest)))
+                .andExpect(status().isOk());
+
+        assertThatThrownBy(() ->
+                mockMvc.perform(post("/api/order")
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(orderRequest)))
+        ).hasCause(new OrderDuplicationException());
     }
 
     private OrderRequestDto getOrderRequest() {
@@ -72,7 +94,7 @@ class OrderControllerTest {
         orderProductList.add(orderProduct2);
 
         OrderRequestDto orderRequest = new OrderRequestDto();
-        orderRequest.setShippingAddressId(1L);
+        orderRequest.setShippingAddressId(4L);
         orderRequest.setOrderList(orderProductList);
         orderRequest.setOrderPrice(150000);
         orderRequest.setTotalPrice(156000);
@@ -81,14 +103,4 @@ class OrderControllerTest {
         return orderRequest;
     }
 
-    private OrderResponseDto getOrderResponse() {
-
-        List<OrderProductResponse> orderProductResponseList = new ArrayList<>();
-
-        orderProductResponseList.add(
-                new OrderProductResponse("사과", 1L, 10000, 3000, 3, "우리", "yeon", "123-123-1234")
-        );
-
-        return new OrderResponseDto(orderProductResponseList, 33000);
-    }
 }
