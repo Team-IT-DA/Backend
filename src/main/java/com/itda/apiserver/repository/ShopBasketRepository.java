@@ -5,5 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ShopBascketRepository extends CrudRepository<ShopBasket, Long> {
+public interface ShopBasketRepository extends CrudRepository<ShopBasket, Long> {
 }

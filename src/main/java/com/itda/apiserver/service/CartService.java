@@ -3,10 +3,10 @@ package com.itda.apiserver.service;
 import com.itda.apiserver.domain.Product;
 import com.itda.apiserver.dto.CartProduct;
 import com.itda.apiserver.exception.NotFoundProductFromCartException;
-import com.itda.apiserver.redis.BascketProduct;
+import com.itda.apiserver.redis.BasketProduct;
 import com.itda.apiserver.redis.ShopBasket;
 import com.itda.apiserver.repository.ProductRepository;
-import com.itda.apiserver.repository.ShopBascketRepository;
+import com.itda.apiserver.repository.ShopBasketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,16 +16,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CartService {
 
-    private final ShopBascketRepository shopBascketRepository;
+    private final ShopBasketRepository shopBasketRepository;
     private final ProductRepository productRepository;
 
     public void addProduct(CartProduct cartRequestDto, Long userId) {
 
         Product product = productRepository.findById(cartRequestDto.getId()).orElseThrow(RuntimeException::new);
-        Optional<ShopBasket> userCart = shopBascketRepository.findById(userId);
+        Optional<ShopBasket> userCart = shopBasketRepository.findById(userId);
 
-        BascketProduct bascketProduct
-                = new BascketProduct(product.getId(),
+        BasketProduct basketProduct
+                = new BasketProduct(product.getId(),
                 product.getTitle(),
                 product.getPrice(),
                 product.getDeliveryFee(),
@@ -34,17 +34,17 @@ public class CartService {
                 product.getSeller().getName()
         );
         ShopBasket shopBasket = userCart.orElseGet(() -> new ShopBasket(userId));
-        shopBasket.addProduct(bascketProduct);
-        shopBascketRepository.save(shopBasket);
+        shopBasket.addProduct(basketProduct);
+        shopBasketRepository.save(shopBasket);
     }
 
     public void deleteProduct(Long productId, Long userId) {
-        ShopBasket shopBasket = shopBascketRepository.findById(userId).orElseThrow(NotFoundProductFromCartException::new);
+        ShopBasket shopBasket = shopBasketRepository.findById(userId).orElseThrow(NotFoundProductFromCartException::new);
         shopBasket.dropProduct(productId);
-        shopBascketRepository.save(shopBasket);
+        shopBasketRepository.save(shopBasket);
     }
 
     public ShopBasket getProducts(Long userId) {
-        return shopBascketRepository.findById(userId).orElseThrow(RuntimeException::new);
+        return shopBasketRepository.findById(userId).orElseThrow(RuntimeException::new);
     }
 }
