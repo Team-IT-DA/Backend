@@ -3,10 +3,7 @@ package com.itda.apiserver.service;
 import com.itda.apiserver.domain.*;
 import com.itda.apiserver.dto.OrderProductRequest;
 import com.itda.apiserver.dto.OrderRequestDto;
-import com.itda.apiserver.exception.OrderDuplicationException;
-import com.itda.apiserver.exception.ProductNotFountException;
-import com.itda.apiserver.exception.ShippingInfoNotFoundException;
-import com.itda.apiserver.exception.UserNotFoundException;
+import com.itda.apiserver.exception.*;
 import com.itda.apiserver.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,7 +42,7 @@ public class OrderService {
         ShippingInfo shippingInfo = shippingInfoRepository.findById(orderRequest.getShippingAddressId())
                 .orElseThrow(ShippingInfoNotFoundException::new);
 
-        List<Order> orders = getOrders(orderRequest.getOrderList());
+        List<Order> orders = toOrders(orderRequest.getOrderList());
 
         OrderSheet orderSheet = OrderSheet.createOrderSheet(orderRequest.getTotalPrice(), user, shippingInfo, orders);
         orderSheetRepository.save(orderSheet);
@@ -56,7 +53,7 @@ public class OrderService {
         return orders;
     }
 
-    private List<Order> getOrders(List<OrderProductRequest> orderList) {
+    private List<Order> toOrders(List<OrderProductRequest> orderList) {
 
         return orderList.stream()
                 .map(orderProductDto -> {
@@ -66,4 +63,14 @@ public class OrderService {
                 }).collect(Collectors.toList());
     }
 
+    public OrderSheet getOrderSheet(Long userId, Long orderSheetId) {
+
+        OrderSheet orderSheet = orderSheetRepository.findByIdWithOrders(orderSheetId).orElseThrow(OrderSheetNotFoundException::new);
+
+        if (!orderSheet.isSameUser(userId)) {
+            throw new OrderSheetNotFoundException();
+        }
+
+        return orderSheet;
+    }
 }
