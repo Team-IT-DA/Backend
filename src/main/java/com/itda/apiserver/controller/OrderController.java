@@ -3,16 +3,12 @@ package com.itda.apiserver.controller;
 import com.itda.apiserver.annotation.LoginRequired;
 import com.itda.apiserver.annotation.UserId;
 import com.itda.apiserver.domain.Order;
+import com.itda.apiserver.domain.OrderSheet;
 import com.itda.apiserver.domain.Product;
-import com.itda.apiserver.dto.ApiResult;
-import com.itda.apiserver.dto.OrderProductResponse;
-import com.itda.apiserver.dto.OrderRequestDto;
-import com.itda.apiserver.dto.OrderResponseDto;
+import com.itda.apiserver.dto.*;
 import com.itda.apiserver.service.OrderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,6 +42,25 @@ public class OrderController {
                 }).collect(Collectors.toList());
 
         return new OrderResponseDto(orderProductResponses, totalPrice);
+    }
+
+    @LoginRequired
+    @GetMapping("/api/myPage/orders/{orderSheetId}")
+    public ApiResult<MyOrderResponseDto> getOrders(@UserId Long userId, @PathVariable Long orderSheetId) {
+        OrderSheet orderSheet = orderService.getOrderSheet(userId, orderSheetId);
+        return ApiResult.ok(getMyOrderResponse(orderSheet));
+    }
+
+    private MyOrderResponseDto getMyOrderResponse(OrderSheet orderSheet) {
+
+        List<MyOrder> myOrders = orderSheet.getOrders().stream()
+                .map(order -> {
+                    Product product = order.getProduct();
+                    return new MyOrder(product.getTitle(), product.getId(), product.getPrice(), product.getDeliveryFee(),
+                            order.getQuantity(), product.getBank(), product.getAccountHolder(), product.getAccount());
+                }).collect(Collectors.toList());
+
+        return new MyOrderResponseDto(myOrders);
     }
 
 }
