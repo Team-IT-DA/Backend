@@ -25,4 +25,7 @@ public class ShippingInfo extends Core {
     @Column(name = "default_yn")
     private Boolean defaultYN;
 
+    public void beNotDefault() {
+        this.defaultYN = false;
+    }
 }
