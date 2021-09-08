@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface ShippingInfoRepository extends JpaRepository<ShippingInfo, Long> {
 
-    int countByUserIdAndDefaultYNTrue(Long userId);
-
     Optional<ShippingInfo> findByUserIdAndDefaultYNTrue(Long userId);
+
+    boolean existsByUserIdAndDefaultYNTrue(Long userId);
 }
