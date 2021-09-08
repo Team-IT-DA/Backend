@@ -53,7 +53,6 @@ public class Product extends Core {
     @Lob
     private String description;
 
-    // Todo: N+1 터져서 지연 로딩으로 변경했지만 기존 product 관련 코드에 영향 미칠 수 있으니 상의필요함
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "main_category_id")
     private MainCategory mainCategory;
