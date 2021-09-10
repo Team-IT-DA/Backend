@@ -44,7 +44,6 @@ public class ShippingInfoService {
     }
 
     private boolean isDefaultShippingInfoExist(Long userId) {
-        int count = shippingInfoRepository.countByUserIdAndDefaultYNTrue(userId);
-        return count > 0;
+        return shippingInfoRepository.existsByUserIdAndDefaultYNTrue(userId);
     }
 }

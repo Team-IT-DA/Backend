@@ -1,6 +1,7 @@
 package com.itda.apiserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itda.apiserver.domain.*;
 import com.itda.apiserver.dto.OrderProductRequest;
 import com.itda.apiserver.dto.OrderRequestDto;
 import com.itda.apiserver.exception.OrderDuplicationException;
@@ -13,8 +14,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +36,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OrderControllerIntegrationTest {
 
     @Autowired
+    private EntityManager em;
+
     private MockMvc mockMvc;
+
+    @Autowired
+    private WebApplicationContext ctx;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -43,9 +53,76 @@ class OrderControllerIntegrationTest {
 
     @BeforeEach
     void setUp() throws InterruptedException {
-        orderRequest = getOrderRequest();
-        token = "Bearer " + tokenProvider.createToken(1L);
+
+        mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
+                .addFilters(new CharacterEncodingFilter("UTF-8", true))
+                .build();
+
+        User user = User.builder()
+                .name("김나연")
+                .role(Role.USER)
+                .password("password")
+                .phone("010-1111-2222")
+                .email("yeon@gmail.com")
+                .build();
+        em.persist(user);
+
+        orderRequest = getOrderRequest(user);
+        token = "Bearer " + tokenProvider.createToken(user.getId());
         TimeUnit.SECONDS.sleep(1);
+    }
+
+    private OrderRequestDto getOrderRequest(User user) {
+        Product product1 = getProduct("맛있는 사과");
+        Product product2 = getProduct("충청도 곶감");
+
+        List<OrderProductRequest> orderProductList = new ArrayList<>();
+        OrderProductRequest orderProduct1 = new OrderProductRequest();
+        orderProduct1.setProductId(product1.getId());
+        orderProduct1.setCount(1);
+        orderProductList.add(orderProduct1);
+
+        OrderProductRequest orderProduct2 = new OrderProductRequest();
+        orderProduct2.setProductId(product2.getId());
+        orderProduct2.setCount(2);
+        orderProductList.add(orderProduct2);
+
+        ShippingInfo shippingInfo = getShippingInfo(user);
+
+        OrderRequestDto orderRequest = new OrderRequestDto();
+        orderRequest.setShippingAddressId(shippingInfo.getId());
+        orderRequest.setOrderList(orderProductList);
+        orderRequest.setOrderPrice(30000);
+        orderRequest.setTotalPrice(36000);
+        orderRequest.setShippingFee(6000);
+
+        return orderRequest;
+    }
+
+    private Product getProduct(String title) {
+        Product product = Product.builder()
+                .title(title)
+                .price(10000)
+                .deliveryFee(3000)
+                .account("111-222-333")
+                .accountHolder("김나연")
+                .bank("우리은행")
+                .capacity("1kg")
+                .description("<p>맛있어요!</p>")
+                .origin("국산")
+                .packageType("박스")
+                .salesUnit("1박스")
+                .build();
+
+        em.persist(product);
+        return product;
+    }
+
+    private ShippingInfo getShippingInfo(User user) {
+        Address address = new Address("서울특별시", "강남구", "역삼동", 40, 4, 12345);
+        ShippingInfo shippingInfo = new ShippingInfo(address, user, "김나연", "문 앞에 놔주세요", "010-1111-2222", false);
+        em.persist(shippingInfo);
+        return shippingInfo;
     }
 
     @Test
@@ -79,28 +156,4 @@ class OrderControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(orderRequest)))
         ).hasCause(new OrderDuplicationException());
     }
-
-    private OrderRequestDto getOrderRequest() {
-
-        List<OrderProductRequest> orderProductList = new ArrayList<>();
-        OrderProductRequest orderProduct1 = new OrderProductRequest();
-        orderProduct1.setProductId(43L);
-        orderProduct1.setCount(1);
-        orderProductList.add(orderProduct1);
-
-        OrderProductRequest orderProduct2 = new OrderProductRequest();
-        orderProduct2.setProductId(44L);
-        orderProduct2.setCount(2);
-        orderProductList.add(orderProduct2);
-
-        OrderRequestDto orderRequest = new OrderRequestDto();
-        orderRequest.setShippingAddressId(4L);
-        orderRequest.setOrderList(orderProductList);
-        orderRequest.setOrderPrice(150000);
-        orderRequest.setTotalPrice(156000);
-        orderRequest.setShippingFee(6000);
-
-        return orderRequest;
-    }
-
 }

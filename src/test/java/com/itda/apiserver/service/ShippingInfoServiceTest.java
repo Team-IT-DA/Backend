@@ -45,12 +45,12 @@ class ShippingInfoServiceTest {
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(shippingInfoDto.isDefaultAddrYn()).thenReturn(true);
-        when(shippingInfoRepository.countByUserIdAndDefaultYNTrue(anyLong())).thenReturn(1);
+        when(shippingInfoRepository.existsByUserIdAndDefaultYNTrue(anyLong())).thenReturn(true);
         when(shippingInfoRepository.findByUserIdAndDefaultYNTrue(anyLong())).thenReturn(Optional.of(shippingInfo));
 
         shippingInfoService.addShippingInfo(1L, shippingInfoDto);
 
-        verify(shippingInfoRepository, times(1)).countByUserIdAndDefaultYNTrue(anyLong());
+        verify(shippingInfoRepository, times(1)).existsByUserIdAndDefaultYNTrue(anyLong());
         verify(shippingInfoRepository, times(1)).findByUserIdAndDefaultYNTrue(anyLong());
         verify(shippingInfo, times(1)).beNotDefault();
         verify(userRepository, times(1)).findById(anyLong());
@@ -63,11 +63,11 @@ class ShippingInfoServiceTest {
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(shippingInfoDto.isDefaultAddrYn()).thenReturn(false);
-        when(shippingInfoRepository.countByUserIdAndDefaultYNTrue(anyLong())).thenReturn(0);
+        when(shippingInfoRepository.existsByUserIdAndDefaultYNTrue(anyLong())).thenReturn(false);
 
         shippingInfoService.addShippingInfo(1L, shippingInfoDto);
 
-        verify(shippingInfoRepository, times(0)).countByUserIdAndDefaultYNTrue(anyLong());
+        verify(shippingInfoRepository, times(0)).existsByUserIdAndDefaultYNTrue(anyLong());
         verify(shippingInfoRepository, times(0)).findByUserIdAndDefaultYNTrue(anyLong());
         verify(shippingInfo, times(0)).beNotDefault();
         verify(userRepository, times(1)).findById(anyLong());
