@@ -43,8 +43,7 @@ public class SocialLoginService {
     }
 
     private boolean isNewUser(String email) {
-        int count = userRepository.countByEmail(email);
-        return count == 0;
+        return userRepository.existsByEmail(email);
     }
 
     private User signUp(UserInfo userInfo) {

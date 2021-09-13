@@ -28,9 +28,7 @@ public class UserService {
     }
 
     public void verifyEmail(String email) {
-        int userCount = userRepository.countByEmail(email);
-
-        if (userCount > 0) {
+        if (userRepository.existsByEmail(email)) {
             throw new EmailDuplicationException();
         }
     }
