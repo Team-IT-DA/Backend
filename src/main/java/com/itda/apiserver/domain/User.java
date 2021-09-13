@@ -46,6 +46,13 @@ public class User extends Core {
         this.account = account;
     }
 
+    public void updateProfile(String email, String password, String name, String telephone) {
+        this.email = email.equals("") ? this.email : email;
+        this.password = password.equals("") ? this.password : password;
+        this.name = name.equals("") ? this.name : name;
+        this.phone = telephone.equals("") ? this.phone : telephone;
+    }
+
     private Role getRole(String authCode) {
         return authCode == null ? Role.USER : Role.SELLER;
     }

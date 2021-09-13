@@ -4,6 +4,7 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.EmailVerificationRequestDto;
 import com.itda.apiserver.dto.LoginRequestDto;
 import com.itda.apiserver.dto.SignUpRequestDto;
+import com.itda.apiserver.dto.UpdateProfileDto;
 import com.itda.apiserver.exception.EmailDuplicationException;
 import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.exception.WrongPasswordException;
@@ -43,6 +44,9 @@ public class UserServiceTest {
     @Mock
     private LoginRequestDto loginRequestDto;
 
+    @Mock
+    private UpdateProfileDto updateProfileDto;
+
     @MockBean
     private TokenProvider tokenProvider;
 
@@ -58,22 +62,22 @@ public class UserServiceTest {
     @DisplayName("이메일 중복 확인 기능 테스트, 중복된 이메일이 없는 경우")
     void verifyEmail() {
         when(emailRequestDto.getEmail()).thenReturn("yeon@gmail.com");
-        when(userRepository.countByEmail(anyString())).thenReturn(0);
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
 
         userService.verifyEmail(emailRequestDto.getEmail());
 
-        verify(userRepository, times(1)).countByEmail(anyString());
+        verify(userRepository, times(1)).existsByEmail(anyString());
     }
 
     @Test
     @DisplayName("이메일 중복 확인 기능 테스트, 이미 이메일이 존재하는 경우")
     void verifyEmailFail() {
         when(emailRequestDto.getEmail()).thenReturn("yeon@gmail.com");
-        when(userRepository.countByEmail(anyString())).thenReturn(1);
+        when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
         assertThrows(EmailDuplicationException.class, () -> userService.verifyEmail(emailRequestDto.getEmail()));
 
-        verify(userRepository, times(1)).countByEmail(anyString());
+        verify(userRepository, times(1)).existsByEmail(anyString());
     }
 
     @Test
@@ -124,6 +128,24 @@ public class UserServiceTest {
         verify(loginRequestDto, times(1)).getPassword();
         verify(user, times(1)).isPasswordMatching(anyString());
         verify(tokenProvider, times(0)).createToken(anyLong());
+    }
+
+    @Test
+    @DisplayName("회원 정보 업데이트 서비스")
+    void correctUpdateProfile() {
+        String PHONE = "010-3200-1234";
+        String PASSWORD = "12345";
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+
+        updateProfileDto.setEmail("dodo@naver.com");
+        updateProfileDto.setPassword(PASSWORD);
+        updateProfileDto.setName("roach");
+        updateProfileDto.setTelephone(PHONE);
+
+        userService.updateProfile(updateProfileDto, 1L);
+
+        verify(userRepository, times(1)).findById(anyLong());
+        verify(userRepository, times(1)).save(any());
     }
 
 }
