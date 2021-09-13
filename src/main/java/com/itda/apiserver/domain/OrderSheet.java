@@ -45,8 +45,4 @@ public class OrderSheet extends Core {
         orders.stream()
                 .forEach(order -> order.setOrderSheet(this));
     }
-
-    public boolean isSameUser(Long userId) {
-        return this.user.getId().equals(userId);
-    }
 }

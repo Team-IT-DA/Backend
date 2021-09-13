@@ -3,9 +3,13 @@ package com.itda.apiserver.service;
 import com.itda.apiserver.domain.*;
 import com.itda.apiserver.dto.OrderProductRequest;
 import com.itda.apiserver.dto.OrderRequestDto;
-import com.itda.apiserver.exception.*;
+import com.itda.apiserver.exception.OrderDuplicationException;
+import com.itda.apiserver.exception.ProductNotFountException;
+import com.itda.apiserver.exception.ShippingInfoNotFoundException;
+import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +25,7 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final OrderHistoryRepository orderHistoryRepository;
     private final OrderSheetRepository orderSheetRepository;
+    private final OrderSheetCustomRepository orderSheetCustomRepository;
     private final ShippingInfoRepository shippingInfoRepository;
     private final OrderValidationService orderValidationService;
 
@@ -63,14 +68,7 @@ public class OrderService {
                 }).collect(Collectors.toList());
     }
 
-    public OrderSheet getOrderSheet(Long userId, Long orderSheetId) {
-
-        OrderSheet orderSheet = orderSheetRepository.findByIdWithOrders(orderSheetId).orElseThrow(OrderSheetNotFoundException::new);
-
-        if (!orderSheet.isSameUser(userId)) {
-            throw new OrderSheetNotFoundException();
-        }
-
-        return orderSheet;
+    public List<OrderSheet> getOrderSheet(Long userId, Integer period, Pageable pageable) {
+        return orderSheetCustomRepository.findByUserId(userId, period, pageable);
     }
 }
