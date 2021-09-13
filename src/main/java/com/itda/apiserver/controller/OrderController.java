@@ -8,6 +8,7 @@ import com.itda.apiserver.domain.Product;
 import com.itda.apiserver.dto.*;
 import com.itda.apiserver.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,22 +46,26 @@ public class OrderController {
     }
 
     @LoginRequired
-    @GetMapping("/api/myPage/orders/{orderSheetId}")
-    public ApiResult<MyOrderResponseDto> getOrders(@UserId Long userId, @PathVariable Long orderSheetId) {
-        OrderSheet orderSheet = orderService.getOrderSheet(userId, orderSheetId);
+    @GetMapping("/api/myPage/orders")
+    public ApiResult<MyOrderResponseDto> showOrders(@UserId Long userId, @RequestParam(required = false) Integer period, Pageable pageable) {
+        List<OrderSheet> orderSheet = orderService.getOrderSheet(userId, period, pageable);
         return ApiResult.ok(getMyOrderResponse(orderSheet));
     }
 
-    private MyOrderResponseDto getMyOrderResponse(OrderSheet orderSheet) {
+    private MyOrderResponseDto getMyOrderResponse(List<OrderSheet> orderSheets) {
 
-        List<MyOrder> myOrders = orderSheet.getOrders().stream()
-                .map(order -> {
-                    Product product = order.getProduct();
-                    return new MyOrder(product.getTitle(), product.getId(), product.getPrice(), product.getDeliveryFee(),
-                            order.getQuantity(), product.getBank(), product.getAccountHolder(), product.getAccount());
+        List<OrderSheetResponseDto> orderSheetResponseDtos = orderSheets.stream()
+                .map(orderSheet -> {
+                    List<MyOrder> myOrders = orderSheet.getOrders().stream()
+                            .map(order -> {
+                                Product product = order.getProduct();
+                                return new MyOrder(product.getTitle(), product.getId(), product.getPrice(), product.getDeliveryFee(),
+                                        order.getQuantity(), product.getBank(), product.getAccountHolder(), product.getAccount());
+                            }).collect(Collectors.toList());
+                    return new OrderSheetResponseDto(orderSheet.getId(), orderSheet.getCreatedAt().toLocalDate(), myOrders);
                 }).collect(Collectors.toList());
 
-        return new MyOrderResponseDto(myOrders);
+        return new MyOrderResponseDto(orderSheetResponseDtos);
     }
 
 }

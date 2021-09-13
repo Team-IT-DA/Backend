@@ -9,5 +9,5 @@ import java.util.List;
 @AllArgsConstructor
 public class MyOrderResponseDto {
 
-    private List<MyOrder> orderList;
+    private List<OrderSheetResponseDto> orderSheetList;
 }
