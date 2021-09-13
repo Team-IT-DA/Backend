@@ -34,6 +34,20 @@ dependencies {
 
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
+	implementation 'com.querydsl:querydsl-jpa:4.4.0'
+	annotationProcessor(
+			"javax.persistence:javax.persistence-api",
+			"javax.annotation:javax.annotation-api",
+			"com.querydsl:querydsl-apt:4.4.0:jpa")
+
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated"]
+		}
+	}
 }
 
 test {
