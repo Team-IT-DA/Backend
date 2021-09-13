@@ -4,6 +4,7 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.LoginRequestDto;
 import com.itda.apiserver.dto.SignUpRequestDto;
 import com.itda.apiserver.dto.TokenResponseDto;
+import com.itda.apiserver.dto.UpdateProfileDto;
 import com.itda.apiserver.exception.EmailDuplicationException;
 import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.exception.WrongPasswordException;
@@ -25,6 +26,14 @@ public class UserService {
         User user = new User(signUpDto.getName(), signUpDto.getTelephone(),
                 signUpDto.getEmail(), signUpDto.getPassword(), signUpDto.getAuthCode());
         return userRepository.save(user);
+    }
+
+    public void updateProfile(UpdateProfileDto updateProfileDto, Long userId) {
+        verifyEmail(updateProfileDto.getEmail());
+
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        user.updateProfile(updateProfileDto.getEmail(), updateProfileDto.getPassword(), updateProfileDto.getName(), updateProfileDto.getTelephone());
+        userRepository.save(user);
     }
 
     public void verifyEmail(String email) {
