@@ -7,16 +7,14 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.OrderProductRequest;
 import com.itda.apiserver.dto.OrderRequestDto;
 import com.itda.apiserver.exception.OrderDuplicationException;
-import com.itda.apiserver.repository.OrderHistoryRepository;
-import com.itda.apiserver.repository.OrderSheetRepository;
-import com.itda.apiserver.repository.ShippingInfoRepository;
-import com.itda.apiserver.repository.UserRepository;
+import com.itda.apiserver.repository.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +44,9 @@ public class OrderServiceTest {
     @MockBean
     private ShippingInfoRepository shippingInfoRepository;
 
+    @MockBean
+    private OrderSheetCustomRepository orderSheetCustomRepository;
+
     @Mock
     private User user;
 
@@ -57,6 +58,7 @@ public class OrderServiceTest {
 
     @Mock
     private ShippingInfo shippingInfo;
+
 
     @Test
     @DisplayName("주문 기능 테스트")
@@ -91,5 +93,14 @@ public class OrderServiceTest {
         verify(orderSheetRepository, times(0)).save(any(OrderSheet.class));
         verify(orderHistoryRepository, times(0)).save(any(OrderHistory.class));
         verify(orderValidationService, times(0)).save(anyLong());
+    }
+
+    @Test
+    @DisplayName("마이페이지 주문 조회 테스트")
+    void getOrderSheet() {
+
+        orderService.getOrderSheet(1L, 3, Pageable.unpaged());
+
+        verify(orderSheetCustomRepository, times(1)).findByUserId(anyLong(), anyInt(), any(Pageable.class));
     }
 }
