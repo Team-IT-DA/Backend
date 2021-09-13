@@ -1,12 +1,10 @@
 package com.itda.apiserver.controller;
 
+import com.itda.apiserver.annotation.UserId;
 import com.itda.apiserver.dto.*;
 import com.itda.apiserver.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +21,12 @@ public class UserController {
     @GetMapping("/api/duplicateEmail")
     public ApiResult<Void> verifyEmail(@RequestBody EmailVerificationRequestDto requestDto) {
         userService.verifyEmail(requestDto.getEmail());
+        return ApiResult.ok(null);
+    }
+
+    @PutMapping("/api/myPage/user")
+    public ApiResult<Void> updateProfile(@RequestBody UpdateProfileDto updateProfileDto, @UserId Long id) {
+        userService.updateProfile(updateProfileDto, id);
         return ApiResult.ok(null);
     }
 
