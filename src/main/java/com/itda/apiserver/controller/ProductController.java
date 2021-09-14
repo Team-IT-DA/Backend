@@ -2,6 +2,7 @@ package com.itda.apiserver.controller;
 
 import com.itda.apiserver.annotation.LoginRequired;
 import com.itda.apiserver.annotation.UserId;
+import com.itda.apiserver.dto.AddReviewRequestDto;
 import com.itda.apiserver.dto.AddproductRequestDto;
 import com.itda.apiserver.dto.ApiResult;
 import com.itda.apiserver.dto.GetAllProductDto;
@@ -31,4 +32,11 @@ public class ProductController {
         return ApiResult.ok(null);
     }
 
+    @PostMapping("/{productId}/review")
+    @LoginRequired
+    public ApiResult<Void> addReview(@PathVariable Long productId, @UserId Long userId,
+                                     @RequestBody AddReviewRequestDto addReviewRequest) {
+        productService.addReview(userId, productId, addReviewRequest);
+        return ApiResult.ok(null);
+    }
 }
