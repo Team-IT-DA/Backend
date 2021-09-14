@@ -50,6 +50,6 @@ public class UserService {
         }
 
         String token = tokenProvider.createToken(user.getId());
-        return new TokenResponseDto(token);
+        return new TokenResponseDto(token, user.getName());
     }
 }
