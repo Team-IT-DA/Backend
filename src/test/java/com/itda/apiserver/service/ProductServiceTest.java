@@ -13,11 +13,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -61,6 +57,17 @@ class ProductServiceTest {
         verify(userRepository, times(1)).findById(1L);
         verify(mainCategoryRepository, times(1)).findById(anyLong());
         verify(productRepository, times(1)).save(any(Product.class));
+    }
+
+    @Test
+    @DisplayName("제품 상세 조회 기능 테스트")
+    void getProduct() {
+
+        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+
+        productService.getProduct(1L);
+
+        verify(productRepository, times(1)).findById(anyLong());
     }
 
 }
