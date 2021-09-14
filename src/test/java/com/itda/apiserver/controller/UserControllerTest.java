@@ -80,7 +80,7 @@ public class UserControllerTest {
         loginDto.setEmail("yeon@gmail.com");
         loginDto.setPassword("yeon1234");
 
-        TokenResponseDto tokenDto = new TokenResponseDto("thisIsToken");
+        TokenResponseDto tokenDto = new TokenResponseDto("thisIsToken", "yeon");
         when(userService.login(any(LoginRequestDto.class))).thenReturn(tokenDto);
 
         mockMvc.perform(post("/api/login")
@@ -88,6 +88,7 @@ public class UserControllerTest {
                 .content(objectMapper.writeValueAsString(loginDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.token").exists())
+                .andExpect(jsonPath("$.data.token").isString())
                 .andDo(print());
     }
 
