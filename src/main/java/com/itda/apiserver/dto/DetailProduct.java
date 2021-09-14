@@ -18,5 +18,6 @@ public class DetailProduct {
     private String origin;
     private String packagingType;
     private String detailDescription;
+    private String imgUrl;
     private SellerDto seller;
 }

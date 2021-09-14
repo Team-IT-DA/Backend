@@ -34,19 +34,15 @@ public class ProductController {
     @GetMapping("/{productId}")
     public ApiResult<DetailProductResponse> showDetailProduct(@PathVariable Long productId) {
         Product product = productService.getProduct(productId);
-        DetailProduct detailProduct = getDetailProduct(product);
-
-        return ApiResult.ok(new DetailProductResponse(detailProduct));
+        return ApiResult.ok(new DetailProductResponse(getDetailProduct(product)));
     }
 
     private DetailProduct getDetailProduct(Product product) {
 
         User seller = product.getSeller();
+        SellerDto sellerDto = new SellerDto(seller.getId(), seller.getName(), seller.getSellerImageUrl(), seller.getSellerDescription());
 
-        // Todo: api 수정하고 변경 필요 (user 도메인에 imgUrl과 description 없음)
-        SellerDto sellerDto = new SellerDto(seller.getId(), seller.getName(), product.getImageUrl(), product.getDescription());
-
-        DetailProduct detailProduct = DetailProduct.builder()
+        return DetailProduct.builder()
                 .id(product.getId())
                 .name(product.getTitle())
                 .description(product.getDescription())
@@ -58,10 +54,9 @@ public class ProductController {
                 .origin(product.getOrigin())
                 .packagingType(product.getPackageType())
                 .detailDescription(product.getDescription())
+                .imgUrl(product.getImageUrl())
                 .seller(sellerDto)
                 .build();
-
-        return detailProduct;
     }
 
 }
