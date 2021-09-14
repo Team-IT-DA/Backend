@@ -2,10 +2,7 @@ package com.itda.apiserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itda.apiserver.domain.User;
-import com.itda.apiserver.dto.EmailVerificationRequestDto;
-import com.itda.apiserver.dto.LoginRequestDto;
-import com.itda.apiserver.dto.SignUpRequestDto;
-import com.itda.apiserver.dto.TokenResponseDto;
+import com.itda.apiserver.dto.*;
 import com.itda.apiserver.jwt.TokenExtractor;
 import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.service.UserService;
@@ -21,8 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -93,6 +89,34 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.token").exists())
                 .andDo(print());
+    }
+
+    @Test
+    @DisplayName("유저 프로필 업데이트 테스트")
+    void updateProfile() throws Exception {
+
+        UpdateProfileDto updateProfileDto = new UpdateProfileDto();
+        updateProfileDto.setEmail("yeon@gmail.com");
+        updateProfileDto.setName("yeon");
+        updateProfileDto.setTelephone("010-1234-5678");
+        updateProfileDto.setPassword("yeon1234");
+
+        singUp();
+
+        mockMvc.perform(put("/api/myPage/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateProfileDto)))
+                .andExpect(status().isOk());
+    }
+
+    private void singUp() {
+        SignUpRequestDto signUpRequestDto = new SignUpRequestDto();
+        signUpRequestDto.setName("김나연");
+        signUpRequestDto.setEmail("yeon@gmail.com");
+        signUpRequestDto.setTelephone("01022223333");
+        signUpRequestDto.setPassword("1234");
+
+        userService.signUp(signUpRequestDto);
     }
 
 }

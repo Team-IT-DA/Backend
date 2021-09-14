@@ -15,6 +15,7 @@ spring:
     host: 34.125.189.106
     password: itda
 
+
 jwt:
   secret: yeon
   token-validity-in-seconds: 86400
@@ -26,5 +27,6 @@ oauth:
   kakao:
     client_id: ee6e1a4937fbdd837c05bf548215a3ae
     secret: QLSuY5JZW7zxIu28Q64gBXLt0Gkon7RO
-
+server:
+  port: 3000
 
