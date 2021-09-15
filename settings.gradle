@@ -1,2 +1,4 @@
 rootProject.name = 'api-server'
 include('api-server')
+
+project(':api-server').projectDir = file('.api-server')

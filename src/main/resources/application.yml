@@ -7,6 +7,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
   profiles:
     active: local
 
@@ -14,6 +17,7 @@ spring:
     port: 6379
     host: 34.125.189.106
     password: itda
+
 
 jwt:
   secret: yeon
@@ -26,5 +30,6 @@ oauth:
   kakao:
     client_id: ee6e1a4937fbdd837c05bf548215a3ae
     secret: QLSuY5JZW7zxIu28Q64gBXLt0Gkon7RO
-
+server:
+  port: 3000
 

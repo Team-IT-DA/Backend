@@ -4,6 +4,7 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.LoginRequestDto;
 import com.itda.apiserver.dto.SignUpRequestDto;
 import com.itda.apiserver.dto.TokenResponseDto;
+import com.itda.apiserver.dto.UpdateProfileDto;
 import com.itda.apiserver.exception.EmailDuplicationException;
 import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.exception.WrongPasswordException;
@@ -27,10 +28,16 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void verifyEmail(String email) {
-        int userCount = userRepository.countByEmail(email);
+    public void updateProfile(UpdateProfileDto updateProfileDto, Long userId) {
+        verifyEmail(updateProfileDto.getEmail());
 
-        if (userCount > 0) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        user.updateProfile(updateProfileDto.getEmail(), updateProfileDto.getPassword(), updateProfileDto.getName(), updateProfileDto.getTelephone());
+        userRepository.save(user);
+    }
+
+    public void verifyEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
             throw new EmailDuplicationException();
         }
     }
@@ -43,6 +50,6 @@ public class UserService {
         }
 
         String token = tokenProvider.createToken(user.getId());
-        return new TokenResponseDto(token);
+        return new TokenResponseDto(token, user.getName());
     }
 }

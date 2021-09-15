@@ -9,6 +9,7 @@ import com.itda.apiserver.exception.ShippingInfoNotFoundException;
 import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final OrderHistoryRepository orderHistoryRepository;
     private final OrderSheetRepository orderSheetRepository;
+    private final OrderSheetCustomRepository orderSheetCustomRepository;
     private final ShippingInfoRepository shippingInfoRepository;
     private final OrderValidationService orderValidationService;
 
@@ -45,7 +47,7 @@ public class OrderService {
         ShippingInfo shippingInfo = shippingInfoRepository.findById(orderRequest.getShippingAddressId())
                 .orElseThrow(ShippingInfoNotFoundException::new);
 
-        List<Order> orders = getOrders(orderRequest.getOrderList());
+        List<Order> orders = toOrders(orderRequest.getOrderList());
 
         OrderSheet orderSheet = OrderSheet.createOrderSheet(orderRequest.getTotalPrice(), user, shippingInfo, orders);
         orderSheetRepository.save(orderSheet);
@@ -56,7 +58,7 @@ public class OrderService {
         return orders;
     }
 
-    private List<Order> getOrders(List<OrderProductRequest> orderList) {
+    private List<Order> toOrders(List<OrderProductRequest> orderList) {
 
         return orderList.stream()
                 .map(orderProductDto -> {
@@ -66,4 +68,7 @@ public class OrderService {
                 }).collect(Collectors.toList());
     }
 
+    public List<OrderSheet> getOrderSheet(Long userId, Integer period, Pageable pageable) {
+        return orderSheetCustomRepository.findByUserId(userId, period, pageable);
+    }
 }

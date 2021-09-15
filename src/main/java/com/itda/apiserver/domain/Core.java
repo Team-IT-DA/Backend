@@ -23,4 +23,8 @@ public abstract class Core {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public void setCore(LocalDateTime localDateTime) {
+        this.createdAt = localDateTime;
+    }
 }

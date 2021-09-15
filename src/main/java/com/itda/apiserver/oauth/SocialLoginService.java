@@ -39,12 +39,11 @@ public class SocialLoginService {
         User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
         String token = tokenProvider.createToken(user.getId());
 
-        return new TokenResponseDto(token);
+        return new TokenResponseDto(token, user.getName());
     }
 
     private boolean isNewUser(String email) {
-        int count = userRepository.countByEmail(email);
-        return count == 0;
+        return userRepository.existsByEmail(email);
     }
 
     private User signUp(UserInfo userInfo) {
