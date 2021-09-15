@@ -15,7 +15,6 @@ import java.util.List;
 public class Review extends Core {
 
     private String content;
-    private Integer rating;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
