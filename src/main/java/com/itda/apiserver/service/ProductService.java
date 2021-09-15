@@ -7,10 +7,12 @@ import com.itda.apiserver.dto.AddproductRequestDto;
 import com.itda.apiserver.dto.GetAllProductDto;
 import com.itda.apiserver.repository.MainCategoryRepository;
 import com.itda.apiserver.repository.ProductRepository;
+import com.itda.apiserver.repository.ReviewRepository;
 import com.itda.apiserver.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +23,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final MainCategoryRepository mainCategoryRepository;
+    private final ReviewRepository reviewRepository;
 
     public void addProduct(AddproductRequestDto addProductDto, Long userId) {
 
@@ -61,5 +64,4 @@ public class ProductService {
                 })
                 .collect(Collectors.toList());
     }
-
 }

@@ -7,6 +7,7 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddproductRequestDto;
 import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.repository.MainCategoryRepository;
+import com.itda.apiserver.repository.ProductRepository;
 import com.itda.apiserver.repository.UserRepository;
 import com.itda.apiserver.service.ProductService;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +29,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -51,6 +53,9 @@ class ProductControllerTest {
 
     @MockBean
     MainCategoryRepository mainCategoryRepository;
+
+    @MockBean
+    ProductRepository productRepository;
 
     @Test
     @DisplayName("물품 추가 성공시 HTTP REQUEST 200 반환 e2e Testing")
@@ -117,7 +122,7 @@ class ProductControllerTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(mainCategoryRepository.findById(anyLong())).thenReturn(Optional.of(mainCategory));
 
-        for(int i = 0; i < 20; i++) {
+        for (int i = 0; i < 20; i++) {
             productService.addProduct(createAddProductRequestDto(), 1L);
         }
 
@@ -153,4 +158,5 @@ class ProductControllerTest {
 
         return addproductRequestDto;
     }
+
 }

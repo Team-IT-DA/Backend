@@ -3,10 +3,7 @@ package com.itda.apiserver.domain;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +21,24 @@ public class Review extends Core {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @OneToMany(mappedBy = "review")
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     private final List<ReviewImage> reviewImages = new ArrayList<>();
+
+    private Review(String content, User user, Product product) {
+        this.content = content;
+        this.user = user;
+        this.product = product;
+    }
+
+    public static Review createReview(String content, User user, Product product, List<ReviewImage> reviewImages) {
+        Review review = new Review(content, user, product);
+        review.addReviewImages(reviewImages);
+        return review;
+    }
+
+    private void addReviewImages(List<ReviewImage> reviewImages) {
+        this.reviewImages.addAll(reviewImages);
+        reviewImages.stream()
+                .forEach(reviewImage -> reviewImage.setReview(this));
+    }
 }

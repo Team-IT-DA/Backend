@@ -30,5 +30,4 @@ public class ProductController {
         productService.addProduct(addproductRequestDto, userId);
         return ApiResult.ok(null);
     }
-
 }

@@ -6,6 +6,7 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddproductRequestDto;
 import com.itda.apiserver.repository.MainCategoryRepository;
 import com.itda.apiserver.repository.ProductRepository;
+import com.itda.apiserver.repository.ReviewRepository;
 import com.itda.apiserver.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,11 +14,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -37,6 +34,9 @@ class ProductServiceTest {
     @MockBean
     MainCategoryRepository mainCategoryRepository;
 
+    @MockBean
+    ReviewRepository reviewRepository;
+
     @Mock
     User user;
 
@@ -48,6 +48,7 @@ class ProductServiceTest {
 
     @Mock
     AddproductRequestDto addProductDto;
+
 
     @DisplayName("판매자는 상품 추가를 할 수 있다.")
     @Test
@@ -62,5 +63,4 @@ class ProductServiceTest {
         verify(mainCategoryRepository, times(1)).findById(anyLong());
         verify(productRepository, times(1)).save(any(Product.class));
     }
-
 }
