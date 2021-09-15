@@ -6,6 +6,7 @@ import com.itda.apiserver.dto.OrderProductRequest;
 import com.itda.apiserver.dto.OrderRequestDto;
 import com.itda.apiserver.exception.OrderDuplicationException;
 import com.itda.apiserver.jwt.TokenProvider;
+import com.itda.apiserver.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -48,8 +51,12 @@ class OrderControllerIntegrationTest {
     @Autowired
     private TokenProvider tokenProvider;
 
+    @Autowired
+    private OrderService orderService;
+
     private OrderRequestDto orderRequest;
     private String token;
+    private User user;
 
     @BeforeEach
     void setUp() throws InterruptedException {
@@ -58,7 +65,7 @@ class OrderControllerIntegrationTest {
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
                 .build();
 
-        User user = User.builder()
+        user = User.builder()
                 .name("김나연")
                 .role(Role.USER)
                 .password("password")
@@ -155,5 +162,44 @@ class OrderControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(orderRequest)))
         ).hasCause(new OrderDuplicationException());
+    }
+
+    @Test
+    @DisplayName("마이페이지 주문 조회 기능 테스트")
+    void showMyOrders() throws Exception {
+
+        orderService.order(user.getId(), orderRequest);
+
+        mockMvc.perform(get("/api/myPage/orders")
+                .header("Authorization", token)
+                .queryParam("page", "0")
+                .queryParam("size", "5")
+                .queryParam("sort", "createdAt, desc")
+                .queryParam("period", "3"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.orderSheetList[*].orderSheetId").exists())
+                .andExpect(jsonPath("$.data.orderSheetList[*].createdAt").exists())
+                .andExpect(jsonPath("$.data.orderSheetList[*].orderList").isArray())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("마이페이지 주문 조회 기능 페이지네이션 테스트")
+    void showMyOrdersPagination() throws Exception {
+
+        for (int i = 0; i < 5; i++) {
+            orderService.order(user.getId(), orderRequest);
+            TimeUnit.SECONDS.sleep(1);
+        }
+
+        mockMvc.perform(get("/api/myPage/orders")
+                .header("Authorization", token)
+                .queryParam("page", "0")
+                .queryParam("size", "3")
+                .queryParam("sort", "createdAt, desc")
+                .queryParam("period", "3"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.orderSheetList", hasSize(3)))
+                .andDo(print());
     }
 }
