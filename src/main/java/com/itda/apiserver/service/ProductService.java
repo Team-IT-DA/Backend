@@ -1,11 +1,10 @@
 package com.itda.apiserver.service;
 
-import com.itda.apiserver.domain.*;
-import com.itda.apiserver.dto.AddReviewRequestDto;
+import com.itda.apiserver.domain.MainCategory;
+import com.itda.apiserver.domain.Product;
+import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddproductRequestDto;
 import com.itda.apiserver.dto.GetAllProductDto;
-import com.itda.apiserver.exception.ProductNotFountException;
-import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.repository.MainCategoryRepository;
 import com.itda.apiserver.repository.ProductRepository;
 import com.itda.apiserver.repository.ReviewRepository;
@@ -65,17 +64,4 @@ public class ProductService {
                 })
                 .collect(Collectors.toList());
     }
-
-    public void addReview(Long userId, Long productId, AddReviewRequestDto reviewRequest) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        Product product = productRepository.findById(productId).orElseThrow(ProductNotFountException::new);
-
-        List<ReviewImage> reviewImages = reviewRequest.getImages().stream()
-                .map(ReviewImage::new)
-                .collect(Collectors.toList());
-
-        Review review = Review.createReview(reviewRequest.getContents(), user, product, reviewImages);
-        reviewRepository.save(review);
-    }
-
 }
