@@ -2,6 +2,7 @@ package com.itda.apiserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itda.apiserver.domain.MainCategory;
+import com.itda.apiserver.domain.Product;
 import com.itda.apiserver.domain.Role;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddproductRequestDto;
@@ -10,6 +11,7 @@ import com.itda.apiserver.repository.MainCategoryRepository;
 import com.itda.apiserver.repository.ProductRepository;
 import com.itda.apiserver.repository.UserRepository;
 import com.itda.apiserver.service.ProductService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.util.Optional;
 
@@ -37,8 +42,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 class ProductControllerTest {
 
-    @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    private WebApplicationContext ctx;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -56,6 +63,13 @@ class ProductControllerTest {
 
     @MockBean
     ProductRepository productRepository;
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
+                .addFilters(new CharacterEncodingFilter("UTF-8", true))
+                .build();
+    }
 
     @Test
     @DisplayName("물품 추가 성공시 HTTP REQUEST 200 반환 e2e Testing")
@@ -159,4 +173,50 @@ class ProductControllerTest {
         return addproductRequestDto;
     }
 
+    @Test
+    @DisplayName("제품 상세 조회 기능 테스트")
+    void showDetailProduct() throws Exception {
+
+        User user = createUser();
+        Product product = getProduct(user);
+
+        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+
+        mockMvc.perform(get("/api/products/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.product.name").isString())
+                .andExpect(jsonPath("$.data.product.description").isString())
+                .andExpect(jsonPath("$.data.product.price").isNumber())
+                .andExpect(jsonPath("$.data.product.seller.name").isString())
+                .andDo(print());
+
+    }
+
+    private User createUser() {
+        return User.builder()
+                .name("roach")
+                .email("honux")
+                .phone("01000000000")
+                .role(Role.SELLER)
+                .password("1234@@@")
+                .account("110-440-1104123")
+                .build();
+    }
+
+    private Product getProduct(User user) {
+        return Product.builder()
+                .title("흙당근")
+                .description("제주 바다 바람을 품은 친환경 흙당근")
+                .price(10000)
+                .salesUnit("1봉지")
+                .capacity("500g (2~4개입)")
+                .deliveryFee(2500)
+                .deliveryDescription("5만원 이상 무료배송")
+                .origin("제주")
+                .packageType("봉지")
+                .description("###제목<br><p>내용들어가고 어쩌고</p>")
+                .imageUrl("imgUrl.com")
+                .seller(user)
+                .build();
+    }
 }

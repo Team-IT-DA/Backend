@@ -6,7 +6,6 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddproductRequestDto;
 import com.itda.apiserver.repository.MainCategoryRepository;
 import com.itda.apiserver.repository.ProductRepository;
-import com.itda.apiserver.repository.ReviewRepository;
 import com.itda.apiserver.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,9 +33,6 @@ class ProductServiceTest {
     @MockBean
     MainCategoryRepository mainCategoryRepository;
 
-    @MockBean
-    ReviewRepository reviewRepository;
-
     @Mock
     User user;
 
@@ -63,4 +59,16 @@ class ProductServiceTest {
         verify(mainCategoryRepository, times(1)).findById(anyLong());
         verify(productRepository, times(1)).save(any(Product.class));
     }
+
+    @Test
+    @DisplayName("제품 상세 조회 기능 테스트")
+    void getProduct() {
+
+        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+
+        productService.getProduct(1L);
+
+        verify(productRepository, times(1)).findById(anyLong());
+    }
+
 }
