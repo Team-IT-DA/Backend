@@ -8,5 +8,6 @@ import lombok.Getter;
 public class TokenResponseDto {
 
     private String token;
+    private String name;
 
 }
