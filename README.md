@@ -17,7 +17,7 @@ Test - JUnit5, Mockito
 
 Database - MySQL
 
-Server - Google Cloud Platform, Nginx
+Server - Google Cloud Platform, Nginx, Docker
 
 CI/CD - Jenkins
 
