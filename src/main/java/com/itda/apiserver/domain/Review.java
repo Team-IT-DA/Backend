@@ -41,4 +41,8 @@ public class Review extends Core {
         reviewImages.stream()
                 .forEach(reviewImage -> reviewImage.setReview(this));
     }
+
+    public boolean isMyReview(Long userId) {
+        return this.user.getId().equals(userId);
+    }
 }
