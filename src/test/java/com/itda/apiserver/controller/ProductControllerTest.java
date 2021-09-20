@@ -61,7 +61,7 @@ class ProductControllerTest {
     @MockBean
     MainCategoryRepository mainCategoryRepository;
 
-    @MockBean
+    @Autowired
     ProductRepository productRepository;
 
     @BeforeEach
@@ -178,11 +178,17 @@ class ProductControllerTest {
     void showDetailProduct() throws Exception {
 
         User user = createUser();
-        Product product = getProduct(user);
+        MainCategory mainCategory = new MainCategory("채소");
 
-        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(mainCategoryRepository.findById(anyLong())).thenReturn(Optional.of(mainCategory));
 
-        mockMvc.perform(get("/api/products/1"))
+        productService.addProduct(createAddProductRequestDto(), 1L);
+        final Product product = productRepository.findAll().stream().findFirst().get();
+
+        String url = "/api/products/" + Long.toString(product.getId());
+
+        mockMvc.perform(get(url))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.product.name").isString())
                 .andExpect(jsonPath("$.data.product.description").isString())
