@@ -64,4 +64,10 @@ public class Product extends Core {
     @OneToMany(mappedBy = "product")
     private final List<Review> reviews = new ArrayList<>();
 
+    public boolean hasMyReview(Long userId) {
+        for (Review review : reviews) {
+            return review.isMyReview(userId);
+        }
+        return false;
+    }
 }
