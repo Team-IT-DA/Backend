@@ -9,9 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.transaction.Transactional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@Transactional
 public class UserProfileUpdateTest {
 
     @Autowired
@@ -37,14 +40,14 @@ public class UserProfileUpdateTest {
         userService.updateProfile(updateProfileDto, prevUser.getId());
 
         User user = userRepository.findById(prevUser.getId()).get();
-        assertEquals(user.getEmail(), "roach@naver.com");
+        assertEquals(user.getEmail(), "1234@naver.com");
         assertEquals(user.getPassword(), PASSWORD);
         assertEquals(user.getPhone(), PHONE);
     }
 
     private User userSignUp() {
         SignUpRequestDto signUpRequestDto = new SignUpRequestDto();
-        signUpRequestDto.setEmail("roach@naver.com");
+        signUpRequestDto.setEmail("1234@naver.com");
         signUpRequestDto.setPassword("1234");
         signUpRequestDto.setName("roach");
         signUpRequestDto.setTelephone("010-1234-5678");

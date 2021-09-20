@@ -18,7 +18,7 @@ public class Order extends Core {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_sheet_id")
     private OrderSheet orderSheet;
 

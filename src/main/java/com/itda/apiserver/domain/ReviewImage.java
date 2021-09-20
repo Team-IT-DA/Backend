@@ -18,4 +18,12 @@ public class ReviewImage extends Core {
     @ManyToOne
     @JoinColumn(name = "review_id")
     private Review review;
+
+    public ReviewImage(String url) {
+        this.url = url;
+    }
+
+    public void setReview(Review review) {
+        this.review = review;
+    }
 }

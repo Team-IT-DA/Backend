@@ -3,11 +3,13 @@ package com.itda.apiserver.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 @Getter
-public class TokenResponseDto {
+@AllArgsConstructor
+public class SellerDto {
 
-    private String token;
+    private Long id;
     private String name;
+    private String imageUrl;
+    private String description;
 
 }

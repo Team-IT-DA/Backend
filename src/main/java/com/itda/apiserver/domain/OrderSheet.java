@@ -1,6 +1,7 @@
 package com.itda.apiserver.domain;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -9,22 +10,20 @@ import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class OrderSheet extends Core {
 
     private Integer totalPrice;
     private Boolean paidYn;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
-    @OneToOne(mappedBy = "orderSheet")
-    private OrderHistory orderHistory;
 
     @OneToMany(mappedBy = "orderSheet", cascade = CascadeType.ALL)
     private final List<Order> orders = new ArrayList<>();
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "shipping_info_id")
     private ShippingInfo shippingInfo;
 
@@ -46,5 +45,4 @@ public class OrderSheet extends Core {
         orders.stream()
                 .forEach(order -> order.setOrderSheet(this));
     }
-
 }

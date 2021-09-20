@@ -53,7 +53,7 @@ public class Product extends Core {
     @Lob
     private String description;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "main_category_id")
     private MainCategory mainCategory;
 

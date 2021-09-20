@@ -24,6 +24,8 @@ public class User extends Core {
 
     private String password;
     private String account;
+    private String sellerDescription;
+    private String sellerImageUrl;
 
     @OneToMany(mappedBy = "user")
     private final List<ShippingInfo> shippingInfos = new ArrayList<>();

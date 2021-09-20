@@ -5,12 +5,14 @@ import com.itda.apiserver.domain.Product;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddproductRequestDto;
 import com.itda.apiserver.dto.GetAllProductDto;
+import com.itda.apiserver.exception.ProductNotFountException;
 import com.itda.apiserver.repository.MainCategoryRepository;
 import com.itda.apiserver.repository.ProductRepository;
 import com.itda.apiserver.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,6 +62,10 @@ public class ProductService {
                     return new GetAllProductDto(product.getId(), product.getImageUrl(), product.getTitle(), product.getSeller().getName(), product.getPrice());
                 })
                 .collect(Collectors.toList());
+    }
+
+    public Product getProduct(Long productId) {
+        return productRepository.findById(productId).orElseThrow(ProductNotFountException::new);
     }
 
 }
