@@ -10,4 +10,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("select p from Product p join fetch p.seller s where p.title like %?1%")
     List<Product> findByTitle(String title);
+
+    @Query("select p from Product p join fetch p.seller s where s.name like %?1%")
+    List<Product> findBySellerName(String sellerName);
 }

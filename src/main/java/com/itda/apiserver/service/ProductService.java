@@ -72,4 +72,8 @@ public class ProductService {
         return productRepository.findByTitle(productName);
     }
 
+    public List<Product> getProductsBySellerName(String sellerName) {
+        return productRepository.findBySellerName(sellerName);
+    }
+
 }
