@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -45,6 +46,9 @@ class ProductServiceTest {
     @Mock
     AddproductRequestDto addProductDto;
 
+    @Mock
+    List<Product> productList;
+
 
     @DisplayName("판매자는 상품 추가를 할 수 있다.")
     @Test
@@ -69,6 +73,17 @@ class ProductServiceTest {
         productService.getProduct(1L);
 
         verify(productRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    @DisplayName("제품 이름으로 제품 검색 테스트")
+    void getProductsByName() {
+
+        when(productRepository.findByTitle(anyString())).thenReturn(productList);
+
+        productService.getProductsByName("pizza");
+
+        verify(productRepository, times(1)).findByTitle(anyString());
     }
 
 }
