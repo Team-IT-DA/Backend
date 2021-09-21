@@ -68,4 +68,8 @@ public class ProductService {
         return productRepository.findById(productId).orElseThrow(ProductNotFountException::new);
     }
 
+    public List<Product> getProductsByName(String productName) {
+        return productRepository.findByTitle(productName);
+    }
+
 }
