@@ -86,4 +86,15 @@ class ProductServiceTest {
         verify(productRepository, times(1)).findByTitle(anyString());
     }
 
+    @Test
+    @DisplayName("판매자 이름으로 제품 검색 테스트")
+    void getProductsBySellerName() {
+
+        when(productRepository.findBySellerName(anyString())).thenReturn(productList);
+
+        productService.getProductsBySellerName("김나연");
+
+        verify(productRepository, times(1)).findBySellerName(anyString());
+    }
+
 }

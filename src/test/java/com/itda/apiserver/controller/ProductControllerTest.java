@@ -245,4 +245,20 @@ class ProductControllerTest {
                 .build();
     }
 
+    @Test
+    @DisplayName("판매자 이름으로 제품 검색 기능 테스트")
+    void showProductsBySellerName() throws Exception {
+
+        User seller = createUser();
+        Product product = createProduct(seller);
+        productRepository.save(product);
+
+        mockMvc.perform(get("/api/products")
+                .param("sellerName", "roach"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.products").isArray())
+                .andExpect(jsonPath("$.data.products[*].sellerName").value(seller.getName()))
+                .andDo(print());
+    }
+
 }
