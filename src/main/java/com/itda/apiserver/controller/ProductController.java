@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/products")
@@ -59,4 +60,22 @@ public class ProductController {
                 .build();
     }
 
+    @GetMapping(params = "productName")
+    public ApiResult<SearchProductDto> showProductsByName(@RequestParam String productName) {
+        List<Product> products = productService.getProductsByName(productName);
+        return ApiResult.ok(new SearchProductDto(getProductDtos(products)));
+    }
+
+    @GetMapping(params = "sellerName")
+    public ApiResult<SearchProductDto> showProductsBySellerName(@RequestParam String sellerName) {
+        List<Product> products = productService.getProductsBySellerName(sellerName);
+        return ApiResult.ok(new SearchProductDto(getProductDtos(products)));
+    }
+
+    private List<GetAllProductDto> getProductDtos(List<Product> products) {
+        return products.stream()
+                .map(product -> new GetAllProductDto(product.getId(), product.getImageUrl(), product.getTitle(),
+                        product.getSeller().getName(), product.getPrice()))
+                .collect(Collectors.toList());
+    }
 }

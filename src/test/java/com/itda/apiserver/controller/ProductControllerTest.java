@@ -209,7 +209,23 @@ class ProductControllerTest {
                 .build();
     }
 
-    private Product getProduct(User user) {
+    @Test
+    @DisplayName("제품 이름으로 제품 검색 기능 테스트")
+    void showProductsByName() throws Exception {
+
+        User seller = createUser();
+        Product product = createProduct(seller);
+        productRepository.save(product);
+
+        mockMvc.perform(get("/api/products")
+                .param("productName", "당근"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.products").isArray())
+                .andExpect(jsonPath("$.data.products[*].productName").value(product.getTitle()))
+                .andDo(print());
+    }
+
+    private Product createProduct(User user) {
         return Product.builder()
                 .title("흙당근")
                 .description("제주 바다 바람을 품은 친환경 흙당근")
@@ -222,7 +238,27 @@ class ProductControllerTest {
                 .packageType("봉지")
                 .description("###제목<br><p>내용들어가고 어쩌고</p>")
                 .imageUrl("imgUrl.com")
+                .account("111-222-333")
+                .accountHolder("roach")
+                .bank("우리은행")
                 .seller(user)
                 .build();
     }
+
+    @Test
+    @DisplayName("판매자 이름으로 제품 검색 기능 테스트")
+    void showProductsBySellerName() throws Exception {
+
+        User seller = createUser();
+        Product product = createProduct(seller);
+        productRepository.save(product);
+
+        mockMvc.perform(get("/api/products")
+                .param("sellerName", "roach"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.products").isArray())
+                .andExpect(jsonPath("$.data.products[*].sellerName").value(seller.getName()))
+                .andDo(print());
+    }
+
 }
