@@ -17,7 +17,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping("/api/products/{productId}/review")
+    @PostMapping("/api/products/{productId}/reviews")
     @LoginRequired
     public ApiResult<Void> addReview(@PathVariable Long productId, @UserId Long userId,
                                      @RequestBody AddReviewRequestDto addReviewRequest) {
@@ -25,7 +25,7 @@ public class ReviewController {
         return ApiResult.ok(null);
     }
 
-    @GetMapping("/api/myPage/revies")
+    @GetMapping("/api/myPage/reviews")
     @LoginRequired
     public ApiResult<List<MyReviewsDto>> getMyReviews(@UserId Long userId) {
         return ApiResult.ok(reviewService.getMyReviews(userId));
