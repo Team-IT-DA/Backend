@@ -1,6 +1,12 @@
 package com.itda.apiserver;
 
+import com.itda.apiserver.domain.MainCategory;
+import com.itda.apiserver.dto.AddReviewRequestDto;
 import com.itda.apiserver.dto.AddproductRequestDto;
+import com.itda.apiserver.dto.SignUpRequestDto;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestHelper {
 
@@ -25,6 +31,33 @@ public class TestHelper {
         addproductRequestDto.setMainCategoryId(1L);
 
         return addproductRequestDto;
+    }
+
+    public static AddReviewRequestDto createAddReviewRequestDto() {
+
+        AddReviewRequestDto addReviewRequest = new AddReviewRequestDto();
+
+        List<String> imageList = new ArrayList<>();
+        imageList.add("image url1");
+        imageList.add("image url2");
+
+        addReviewRequest.setContents("신선하고 맛있어요");
+        addReviewRequest.setImages(imageList);
+
+        return addReviewRequest;
+    }
+
+    public static SignUpRequestDto createSignUpRequestDto() {
+        SignUpRequestDto signUpRequestDto = new SignUpRequestDto();
+        signUpRequestDto.setTelephone("01012345678");
+        signUpRequestDto.setEmail("test@naver.com");
+        signUpRequestDto.setName("roach");
+        signUpRequestDto.setPassword("1234");
+        return signUpRequestDto;
+    }
+
+    public static MainCategory createMainCategory() {
+        return new MainCategory("TEST_CATEGORY");
     }
 
 }
