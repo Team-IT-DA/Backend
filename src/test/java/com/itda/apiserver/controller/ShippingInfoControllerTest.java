@@ -2,28 +2,25 @@ package com.itda.apiserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itda.apiserver.dto.ShippingInfoDto;
-import com.itda.apiserver.jwt.TokenExtractor;
 import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.service.ShippingInfoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ShippingInfoController.class)
-@Import(value = {TokenProvider.class, TokenExtractor.class})
+@SpringBootTest
+@AutoConfigureMockMvc
+@Transactional
 class ShippingInfoControllerTest {
 
     @Autowired
@@ -32,7 +29,6 @@ class ShippingInfoControllerTest {
     @Autowired
     private TokenProvider tokenProvider;
 
-    @MockBean
     private ShippingInfoService shippingInfoService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -56,7 +52,7 @@ class ShippingInfoControllerTest {
 
 
         Long shippingAddressId = 1L;
-        when(shippingInfoService.addShippingInfo(anyLong(), any(ShippingInfoDto.class))).thenReturn(shippingAddressId);
+        shippingInfoService.addShippingInfo(1L, shippingInfoDto);
 
         String token = "Bearer " + tokenProvider.createToken(1L);
 
