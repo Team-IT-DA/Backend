@@ -38,6 +38,14 @@ public class ReviewService {
     }
 
     public List<MyReviewsDto> getMyReviews(Long userId) {
-         return reviewRepository.findUserReviews(userId);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        List<Review> userReviews = reviewRepository.findByUser(user);
+
+        return userReviews.stream().map((review -> new MyReviewsDto(
+                review.getReviewImages(),
+                review.getProduct().getImageUrl(),
+                review.getProduct().getTitle(),
+                review.getCreatedAt()
+        ))).collect(Collectors.toList());
     }
 }
