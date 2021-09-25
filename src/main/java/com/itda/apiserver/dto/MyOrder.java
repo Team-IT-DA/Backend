@@ -1,10 +1,9 @@
 package com.itda.apiserver.dto;
 
-import lombok.AllArgsConstructor;
+import com.itda.apiserver.domain.Order;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class MyOrder {
 
     private String productName;
@@ -17,4 +16,17 @@ public class MyOrder {
     private String accountHolder;
     private String account;
     private boolean hasReview;
+
+    public MyOrder(Order order, boolean hasReview) {
+        productName = order.getProduct().getTitle();
+        productId = order.getProduct().getId();
+        productImgUrl = order.getProduct().getImageUrl();
+        price = order.getProduct().getPrice();
+        shippingFee = order.getProduct().getDeliveryFee();
+        count = order.getQuantity();
+        bank = order.getProduct().getBank();
+        accountHolder = order.getProduct().getAccountHolder();
+        account = order.getProduct().getAccount();
+        this.hasReview = hasReview;
+    }
 }

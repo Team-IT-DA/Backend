@@ -57,13 +57,8 @@ public class OrderController {
         List<OrderSheetResponseDto> orderSheetResponseDtos = orderSheets.stream()
                 .map(orderSheet -> {
                     List<MyOrder> myOrders = orderSheet.getOrders().stream()
-                            .map(order -> {
-                                Product product = order.getProduct();
-                                boolean hasMyReview = product.hasMyReview(userId);
-
-                                return new MyOrder(product.getTitle(), product.getId(), product.getImageUrl(), product.getPrice(), product.getDeliveryFee(),
-                                        order.getQuantity(), product.getBank(), product.getAccountHolder(), product.getAccount(), hasMyReview);
-                            }).collect(Collectors.toList());
+                            .map(order -> new MyOrder(order, order.getProduct().hasMyReview(userId)))
+                            .collect(Collectors.toList());
                     return new OrderSheetResponseDto(orderSheet.getId(), orderSheet.getCreatedAt().toLocalDate(), myOrders);
                 }).collect(Collectors.toList());
 
