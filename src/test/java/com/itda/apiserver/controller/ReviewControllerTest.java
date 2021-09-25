@@ -1,33 +1,38 @@
 package com.itda.apiserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itda.apiserver.domain.MainCategory;
 import com.itda.apiserver.domain.Product;
 import com.itda.apiserver.domain.Role;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddReviewRequestDto;
 import com.itda.apiserver.jwt.TokenProvider;
+import com.itda.apiserver.repository.MainCategoryRepository;
 import com.itda.apiserver.repository.ProductRepository;
 import com.itda.apiserver.repository.UserRepository;
+import com.itda.apiserver.service.ProductService;
+import com.itda.apiserver.service.ReviewService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static com.itda.apiserver.TestHelper.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -40,11 +45,20 @@ public class ReviewControllerTest {
     @Autowired
     TokenProvider tokenProvider;
 
-    @MockBean
+    @Autowired
+    ReviewService reviewService;
+
+    @Autowired
+    ProductService productService;
+
+    @Autowired
     UserRepository userRepository;
 
-    @MockBean
+    @Autowired
     ProductRepository productRepository;
+
+    @Autowired
+    MainCategoryRepository mainCategoryRepository;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -53,25 +67,15 @@ public class ReviewControllerTest {
     void addReview() throws Exception {
 
         AddReviewRequestDto addReviewRequest = createAddReviewRequestDto();
-        String token = "Bearer " + tokenProvider.createToken(1L);
-        Product product = Product.builder()
-                .title("맛있는 사과")
-                .price(10000)
-                .build();
+        MainCategory mainCategory = new MainCategory("채소");
+        User testUser = userRepository.save(returnUserEntity());
+        MainCategory category = mainCategoryRepository.save(mainCategory);
+        String token = "Bearer " + tokenProvider.createToken(testUser.getId());
+        productService.addProduct(createAddProductRequestDto(category.getId()), testUser.getId());
+        Product product = productRepository.findAll().get(0);
 
-        User user = User.builder()
-                .name("roach")
-                .email("honux")
-                .phone("01000000000")
-                .role(Role.SELLER)
-                .password("1234@@@")
-                .account("110-440-1104123")
-                .build();
 
-        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-
-        mockMvc.perform(post("/api/products/1/review")
+        mockMvc.perform(post("/api/products/"+product.getId()+"/reviews")
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(addReviewRequest)))
@@ -79,17 +83,26 @@ public class ReviewControllerTest {
                 .andDo(print());
     }
 
-    private AddReviewRequestDto createAddReviewRequestDto() {
+    @Test
+    @DisplayName("내 리뷰만 조회 기능 테스트")
+    void getMyReivewsTest() throws Exception {
+        AddReviewRequestDto addReviewRequest = createAddReviewRequestDto();
+        MainCategory mainCategory = new MainCategory("채소");
+        User testUser = userRepository.save(returnUserEntity());
+        MainCategory category = mainCategoryRepository.save(mainCategory);
+        String token = "Bearer " + tokenProvider.createToken(testUser.getId());
+        productService.addProduct(createAddProductRequestDto(category.getId()), testUser.getId());
+        Product product = productRepository.findAll().get(0);
+        reviewService.addReview(testUser.getId(), product.getId(), addReviewRequest);
 
-        AddReviewRequestDto addReviewRequest = new AddReviewRequestDto();
-
-        List<String> imageList = new ArrayList<>();
-        imageList.add("image url1");
-        imageList.add("image url2");
-
-        addReviewRequest.setContents("신선하고 맛있어요");
-        addReviewRequest.setImages(imageList);
-
-        return addReviewRequest;
+        mockMvc.perform(
+                get("/api/myPage/reviews")
+                .header(HttpHeaders.AUTHORIZATION, token))
+                .andExpect(jsonPath("$.data[0].reviewDate").exists())
+                .andExpect(jsonPath("$.data[0].productImage").isString())
+                .andExpect(jsonPath("$.data[0].productName").isString())
+                .andExpect(jsonPath("$.data[0].reviewImage").isString())
+                .andExpect(status().isOk());
     }
+
 }

@@ -11,6 +11,7 @@ import com.itda.apiserver.repository.MainCategoryRepository;
 import com.itda.apiserver.repository.ProductRepository;
 import com.itda.apiserver.repository.UserRepository;
 import com.itda.apiserver.service.ProductService;
+import com.itda.apiserver.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.itda.apiserver.TestHelper.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -55,11 +57,11 @@ class ProductControllerTest {
     @Autowired
     ProductService productService;
 
-    @MockBean
-    UserRepository userRepository;
-
-    @MockBean
+    @Autowired
     MainCategoryRepository mainCategoryRepository;
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     ProductRepository productRepository;
@@ -76,39 +78,11 @@ class ProductControllerTest {
     void addProductE2ETest() throws Exception {
 
         MainCategory mainCategory = new MainCategory("채소");
+        User user = userService.signUp(createSignUpRequestDto());
+        String token = "Bearer " + tokenProvider.createToken(user.getId());
+        MainCategory category = mainCategoryRepository.save(mainCategory);
 
-        User user = User.builder()
-                .name("roach")
-                .email("honux")
-                .phone("01000000000")
-                .role(Role.SELLER)
-                .password("1234@@@")
-                .account("110-440-1104123")
-                .build();
-
-        String token = "Bearer " + tokenProvider.createToken(1L);
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(mainCategoryRepository.findById(anyLong())).thenReturn(Optional.of(mainCategory));
-
-        AddproductRequestDto addproductRequestDto = new AddproductRequestDto();
-
-        addproductRequestDto.setName("유기농 감자 1박스");
-        addproductRequestDto.setSubTitle("유가농 감자와 생선까지");
-        addproductRequestDto.setPrice(20000);
-        addproductRequestDto.setSalesUnit("2 박스씩 판매");
-        addproductRequestDto.setProductImage("https://www.naver.com");
-        addproductRequestDto.setCapacity("2kg");
-        addproductRequestDto.setDeliveryFee(2500);
-        addproductRequestDto.setDeliveryFeeCondition("산지 / 제주는 3000원");
-        addproductRequestDto.setOrigin("제주도");
-        addproductRequestDto.setPackagingType("박스");
-        addproductRequestDto.setNotice("뜯을 시 하루안에 드시는 것이 좋습니다.");
-        addproductRequestDto.setDescription("<div>'Hello World'</div>");
-        addproductRequestDto.setBank("국민은행");
-        addproductRequestDto.setAccountHolder("호눅스");
-        addproductRequestDto.setAccount("110-440-114123");
-        addproductRequestDto.setMainCategoryId(1L);
+        AddproductRequestDto addproductRequestDto = createAddProductRequestDto(category.getId());
 
         mockMvc.perform(post("/api/products")
                 .header(HttpHeaders.AUTHORIZATION, token)
@@ -124,20 +98,11 @@ class ProductControllerTest {
 
         MainCategory mainCategory = new MainCategory("채소");
 
-        User user = User.builder()
-                .name("roach")
-                .email("honux")
-                .phone("01000000000")
-                .role(Role.SELLER)
-                .password("1234@@@")
-                .account("110-440-1104123")
-                .build();
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(mainCategoryRepository.findById(anyLong())).thenReturn(Optional.of(mainCategory));
+        User user = userService.signUp(createSignUpRequestDto());
+        MainCategory category = mainCategoryRepository.save(mainCategory);
 
         for (int i = 0; i < 20; i++) {
-            productService.addProduct(createAddProductRequestDto(), 1L);
+            productService.addProduct(createAddProductRequestDto(category.getId()), user.getId());
         }
 
         mockMvc.perform(get("/api/products")
@@ -149,46 +114,19 @@ class ProductControllerTest {
 
     }
 
-
-    private AddproductRequestDto createAddProductRequestDto() {
-        AddproductRequestDto addproductRequestDto = new AddproductRequestDto();
-
-        addproductRequestDto.setName("유기농 감자 1박스");
-        addproductRequestDto.setSubTitle("유가농 감자와 생선까지");
-        addproductRequestDto.setPrice(20000);
-        addproductRequestDto.setSalesUnit("2 박스씩 판매");
-        addproductRequestDto.setProductImage("https://www.naver.com");
-        addproductRequestDto.setCapacity("2kg");
-        addproductRequestDto.setDeliveryFee(2500);
-        addproductRequestDto.setDeliveryFeeCondition("산지 / 제주는 3000원");
-        addproductRequestDto.setOrigin("제주도");
-        addproductRequestDto.setPackagingType("박스");
-        addproductRequestDto.setNotice("뜯을 시 하루안에 드시는 것이 좋습니다.");
-        addproductRequestDto.setDescription("<div>'Hello World'</div>");
-        addproductRequestDto.setBank("국민은행");
-        addproductRequestDto.setAccountHolder("호눅스");
-        addproductRequestDto.setAccount("110-440-114123");
-        addproductRequestDto.setMainCategoryId(1L);
-
-        return addproductRequestDto;
-    }
-
     @Test
     @DisplayName("제품 상세 조회 기능 테스트")
     void showDetailProduct() throws Exception {
 
-        User user = createUser();
         MainCategory mainCategory = new MainCategory("채소");
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(mainCategoryRepository.findById(anyLong())).thenReturn(Optional.of(mainCategory));
+        MainCategory category = mainCategoryRepository.save(mainCategory);
+        User user = userService.signUp(createSignUpRequestDto());
+        productService.addProduct(createAddProductRequestDto(category.getId()), user.getId());
 
-        productService.addProduct(createAddProductRequestDto(), 1L);
-        final Product product = productRepository.findAll().stream().findFirst().get();
+        Long pageNum = productRepository.findAll().get(0).getId();
 
-        String url = "/api/products/" + Long.toString(product.getId());
-
-        mockMvc.perform(get(url))
+        mockMvc.perform(get("/api/products/"+pageNum))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.product.name").isString())
                 .andExpect(jsonPath("$.data.product.description").isString())
@@ -196,69 +134,6 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data.product.seller.name").isString())
                 .andDo(print());
 
-    }
-
-    private User createUser() {
-        return User.builder()
-                .name("roach")
-                .email("honux")
-                .phone("01000000000")
-                .role(Role.SELLER)
-                .password("1234@@@")
-                .account("110-440-1104123")
-                .build();
-    }
-
-    @Test
-    @DisplayName("제품 이름으로 제품 검색 기능 테스트")
-    void showProductsByName() throws Exception {
-
-        User seller = createUser();
-        Product product = createProduct(seller);
-        productRepository.save(product);
-
-        mockMvc.perform(get("/api/products")
-                .param("productName", "당근"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.products").isArray())
-                .andExpect(jsonPath("$.data.products[*].productName").value(product.getTitle()))
-                .andDo(print());
-    }
-
-    private Product createProduct(User user) {
-        return Product.builder()
-                .title("흙당근")
-                .description("제주 바다 바람을 품은 친환경 흙당근")
-                .price(10000)
-                .salesUnit("1봉지")
-                .capacity("500g (2~4개입)")
-                .deliveryFee(2500)
-                .deliveryDescription("5만원 이상 무료배송")
-                .origin("제주")
-                .packageType("봉지")
-                .description("###제목<br><p>내용들어가고 어쩌고</p>")
-                .imageUrl("imgUrl.com")
-                .account("111-222-333")
-                .accountHolder("roach")
-                .bank("우리은행")
-                .seller(user)
-                .build();
-    }
-
-    @Test
-    @DisplayName("판매자 이름으로 제품 검색 기능 테스트")
-    void showProductsBySellerName() throws Exception {
-
-        User seller = createUser();
-        Product product = createProduct(seller);
-        productRepository.save(product);
-
-        mockMvc.perform(get("/api/products")
-                .param("sellerName", "roach"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.products").isArray())
-                .andExpect(jsonPath("$.data.products[*].sellerName").value(seller.getName()))
-                .andDo(print());
     }
 
 }
