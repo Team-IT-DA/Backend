@@ -5,6 +5,7 @@ import com.itda.apiserver.domain.Role;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddReviewRequestDto;
 import com.itda.apiserver.dto.AddproductRequestDto;
+import com.itda.apiserver.dto.ShippingInfoDto;
 import com.itda.apiserver.dto.SignUpRequestDto;
 
 import java.util.ArrayList;
@@ -71,6 +72,22 @@ public class TestHelper {
 
     public static MainCategory createMainCategory() {
         return new MainCategory("TEST_CATEGORY");
+    }
+
+    public static ShippingInfoDto createShippingInfoDte() {
+        ShippingInfoDto shippingInfoDto = new ShippingInfoDto();
+        shippingInfoDto.setConsignee("크롱");
+        shippingInfoDto.setPhone("01011112222");
+        shippingInfoDto.setRegionOneDepthName("서울특별시");
+        shippingInfoDto.setRegionTwoDepthName("강남구");
+        shippingInfoDto.setRegionThreeDepthName("역삼동");
+        shippingInfoDto.setMainBuildingNo(40);
+        shippingInfoDto.setSubBuildingNo(4);
+        shippingInfoDto.setZoneNo(36680);
+        shippingInfoDto.setDefaultAddrYn(true);
+        shippingInfoDto.setMessage("문 앞에 놓고 전화주세요");
+
+        return shippingInfoDto;
     }
 
 }
