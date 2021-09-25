@@ -1,12 +1,7 @@
 package com.itda.apiserver;
 
-import com.itda.apiserver.domain.MainCategory;
-import com.itda.apiserver.domain.Role;
-import com.itda.apiserver.domain.User;
-import com.itda.apiserver.dto.AddReviewRequestDto;
-import com.itda.apiserver.dto.AddproductRequestDto;
-import com.itda.apiserver.dto.ShippingInfoDto;
-import com.itda.apiserver.dto.SignUpRequestDto;
+import com.itda.apiserver.domain.*;
+import com.itda.apiserver.dto.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,4 +85,25 @@ public class TestHelper {
         return shippingInfoDto;
     }
 
+    public static Product createProduct() {
+
+        return Product.builder()
+                .title("맛있는 사과")
+                .price(10000)
+                .deliveryFee(3000)
+                .account("111-222-333")
+                .accountHolder("김나연")
+                .bank("우리은행")
+                .capacity("1kg")
+                .description("<p>맛있어요!</p>")
+                .origin("국산")
+                .packageType("박스")
+                .salesUnit("1박스")
+                .build();
+    }
+
+    public static ShippingInfo createShippingInfo(User user) {
+        Address address = new Address("서울특별시", "강남구", "역삼동", 40, 4, 12345);
+        return new ShippingInfo(address, user, "김나연", "문 앞에 놔주세요", "010-1111-2222", false);
+    }
 }
