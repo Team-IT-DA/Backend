@@ -20,7 +20,7 @@ import org.springframework.web.client.RestTemplate;
 public class KakaoLoginService implements OauthProvider {
 
     private final String GRANT_TYPE = "authorization_code";
-    private final String REDIRECT_URI = "http://localhost:8080/login/kakao/callback";
+    private final String REDIRECT_URI = "http://localhost:3000/kakao/callback";
     private final String ACCESS_TOKEN_URI = "https://kauth.kakao.com/oauth/token";
     private final String USER_INFO_URI = "https://kapi.kakao.com//v2/user/me";
 
