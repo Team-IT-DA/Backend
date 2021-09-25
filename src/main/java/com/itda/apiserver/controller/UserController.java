@@ -1,5 +1,6 @@
 package com.itda.apiserver.controller;
 
+import com.itda.apiserver.annotation.LoginRequired;
 import com.itda.apiserver.annotation.UserId;
 import com.itda.apiserver.dto.*;
 import com.itda.apiserver.service.UserService;
@@ -24,6 +25,7 @@ public class UserController {
         return ApiResult.ok(null);
     }
 
+    @LoginRequired
     @PutMapping("/api/myPage/user")
     public ApiResult<Void> updateProfile(@RequestBody UpdateProfileDto updateProfileDto, @UserId Long id) {
         userService.updateProfile(updateProfileDto, id);
