@@ -4,7 +4,6 @@ import com.itda.apiserver.annotation.LoginRequired;
 import com.itda.apiserver.annotation.UserId;
 import com.itda.apiserver.domain.Order;
 import com.itda.apiserver.domain.OrderSheet;
-import com.itda.apiserver.domain.Product;
 import com.itda.apiserver.dto.*;
 import com.itda.apiserver.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -34,13 +33,8 @@ public class OrderController {
                 .sum();
 
         List<OrderProductResponse> orderProductResponses = orders.stream()
-                .map(order -> {
-                    Product product = order.getProduct();
-                    OrderProductResponse response =
-                            new OrderProductResponse(product.getTitle(), product.getId(), product.getPrice(), product.getDeliveryFee(),
-                                    order.getQuantity(), product.getBank(), product.getAccountHolder(), product.getAccount());
-                    return response;
-                }).collect(Collectors.toList());
+                .map(OrderProductResponse::new)
+                .collect(Collectors.toList());
 
         return new OrderResponseDto(orderProductResponses, totalPrice);
     }
