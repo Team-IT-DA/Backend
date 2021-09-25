@@ -19,6 +19,6 @@ public class MyReviewsDto {
         this.reviewDate = reviewDate;
         this.productImage = productImage;
         this.productName = productName;
-        this.reviewImage = reviewImage.get(0).getUrl();
+        this.reviewImage = reviewImage.size() == 0 ? "이미지 없음" : reviewImage.get(0).getUrl();
     }
 }

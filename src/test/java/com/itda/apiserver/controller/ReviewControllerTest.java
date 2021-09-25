@@ -26,8 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static com.itda.apiserver.TestHelper.*;
@@ -66,22 +68,10 @@ public class ReviewControllerTest {
 
         AddReviewRequestDto addReviewRequest = createAddReviewRequestDto();
         MainCategory mainCategory = new MainCategory("채소");
-
-        User user = User.builder()
-                .name("roach")
-                .email("honux")
-                .phone("01000000000")
-                .role(Role.SELLER)
-                .password("1234@@@")
-                .account("110-440-1104123")
-                .build();
-
-        User testUser = userRepository.save(user);
+        User testUser = userRepository.save(returnUserEntity());
         MainCategory category = mainCategoryRepository.save(mainCategory);
-
         String token = "Bearer " + tokenProvider.createToken(testUser.getId());
         productService.addProduct(createAddProductRequestDto(category.getId()), testUser.getId());
-
         Product product = productRepository.findAll().get(0);
 
 
@@ -93,6 +83,26 @@ public class ReviewControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("내 리뷰만 조회 기능 테스트")
+    void getMyReivewsTest() throws Exception {
+        AddReviewRequestDto addReviewRequest = createAddReviewRequestDto();
+        MainCategory mainCategory = new MainCategory("채소");
+        User testUser = userRepository.save(returnUserEntity());
+        MainCategory category = mainCategoryRepository.save(mainCategory);
+        String token = "Bearer " + tokenProvider.createToken(testUser.getId());
+        productService.addProduct(createAddProductRequestDto(category.getId()), testUser.getId());
+        Product product = productRepository.findAll().get(0);
+        reviewService.addReview(testUser.getId(), product.getId(), addReviewRequest);
 
+        mockMvc.perform(
+                get("/api/myPage/reviews")
+                .header(HttpHeaders.AUTHORIZATION, token))
+                .andExpect(jsonPath("$.data[0].reviewDate").exists())
+                .andExpect(jsonPath("$.data[0].productImage").isString())
+                .andExpect(jsonPath("$.data[0].productName").isString())
+                .andExpect(jsonPath("$.data[0].reviewImage").isString())
+                .andExpect(status().isOk());
+    }
 
 }

@@ -1,6 +1,8 @@
 package com.itda.apiserver;
 
 import com.itda.apiserver.domain.MainCategory;
+import com.itda.apiserver.domain.Role;
+import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddReviewRequestDto;
 import com.itda.apiserver.dto.AddproductRequestDto;
 import com.itda.apiserver.dto.SignUpRequestDto;
@@ -54,6 +56,17 @@ public class TestHelper {
         signUpRequestDto.setName("roach");
         signUpRequestDto.setPassword("1234");
         return signUpRequestDto;
+    }
+
+    public static User returnUserEntity() {
+        return User.builder()
+                .name("roach")
+                .email("honux")
+                .phone("01000000000")
+                .role(Role.SELLER)
+                .password("1234@@@")
+                .account("110-440-1104123")
+                .build();
     }
 
     public static MainCategory createMainCategory() {
