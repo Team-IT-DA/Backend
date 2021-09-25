@@ -43,7 +43,7 @@ public class SocialLoginService {
     }
 
     private boolean isNewUser(String email) {
-        return userRepository.existsByEmail(email);
+        return !userRepository.existsByEmail(email);
     }
 
     private User signUp(UserInfo userInfo) {

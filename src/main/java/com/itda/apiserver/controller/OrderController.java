@@ -49,18 +49,20 @@ public class OrderController {
     @GetMapping("/api/myPage/orders")
     public ApiResult<MyOrderResponseDto> showOrders(@UserId Long userId, @RequestParam(required = false) Integer period, Pageable pageable) {
         List<OrderSheet> orderSheet = orderService.getOrderSheet(userId, period, pageable);
-        return ApiResult.ok(getMyOrderResponse(orderSheet));
+        return ApiResult.ok(getMyOrderResponse(userId, orderSheet));
     }
 
-    private MyOrderResponseDto getMyOrderResponse(List<OrderSheet> orderSheets) {
+    private MyOrderResponseDto getMyOrderResponse(Long userId, List<OrderSheet> orderSheets) {
 
         List<OrderSheetResponseDto> orderSheetResponseDtos = orderSheets.stream()
                 .map(orderSheet -> {
                     List<MyOrder> myOrders = orderSheet.getOrders().stream()
                             .map(order -> {
                                 Product product = order.getProduct();
-                                return new MyOrder(product.getTitle(), product.getId(), product.getPrice(), product.getDeliveryFee(),
-                                        order.getQuantity(), product.getBank(), product.getAccountHolder(), product.getAccount());
+                                boolean hasMyReview = product.hasMyReview(userId);
+
+                                return new MyOrder(product.getTitle(), product.getId(), product.getImageUrl(), product.getPrice(), product.getDeliveryFee(),
+                                        order.getQuantity(), product.getBank(), product.getAccountHolder(), product.getAccount(), hasMyReview);
                             }).collect(Collectors.toList());
                     return new OrderSheetResponseDto(orderSheet.getId(), orderSheet.getCreatedAt().toLocalDate(), myOrders);
                 }).collect(Collectors.toList());

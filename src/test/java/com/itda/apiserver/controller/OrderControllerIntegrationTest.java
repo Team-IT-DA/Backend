@@ -180,6 +180,8 @@ class OrderControllerIntegrationTest {
                 .andExpect(jsonPath("$.data.orderSheetList[*].orderSheetId").exists())
                 .andExpect(jsonPath("$.data.orderSheetList[*].createdAt").exists())
                 .andExpect(jsonPath("$.data.orderSheetList[*].orderList").isArray())
+                .andExpect(jsonPath("$.data.orderSheetList[*].orderList[*].productName").exists())
+                .andExpect(jsonPath("$.data.orderSheetList[*].orderList[*].hasReview").exists())
                 .andDo(print());
     }
 
