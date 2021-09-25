@@ -1,33 +1,36 @@
 package com.itda.apiserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itda.apiserver.domain.MainCategory;
 import com.itda.apiserver.domain.Product;
 import com.itda.apiserver.domain.Role;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddReviewRequestDto;
 import com.itda.apiserver.jwt.TokenProvider;
+import com.itda.apiserver.repository.MainCategoryRepository;
 import com.itda.apiserver.repository.ProductRepository;
 import com.itda.apiserver.repository.UserRepository;
+import com.itda.apiserver.service.ProductService;
+import com.itda.apiserver.service.ReviewService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static com.itda.apiserver.TestHelper.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -40,11 +43,20 @@ public class ReviewControllerTest {
     @Autowired
     TokenProvider tokenProvider;
 
-    @MockBean
+    @Autowired
+    ReviewService reviewService;
+
+    @Autowired
+    ProductService productService;
+
+    @Autowired
     UserRepository userRepository;
 
-    @MockBean
+    @Autowired
     ProductRepository productRepository;
+
+    @Autowired
+    MainCategoryRepository mainCategoryRepository;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -53,11 +65,7 @@ public class ReviewControllerTest {
     void addReview() throws Exception {
 
         AddReviewRequestDto addReviewRequest = createAddReviewRequestDto();
-        String token = "Bearer " + tokenProvider.createToken(1L);
-        Product product = Product.builder()
-                .title("맛있는 사과")
-                .price(10000)
-                .build();
+        MainCategory mainCategory = new MainCategory("채소");
 
         User user = User.builder()
                 .name("roach")
@@ -68,10 +76,16 @@ public class ReviewControllerTest {
                 .account("110-440-1104123")
                 .build();
 
-        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        User testUser = userRepository.save(user);
+        MainCategory category = mainCategoryRepository.save(mainCategory);
 
-        mockMvc.perform(post("/api/products/1/review")
+        String token = "Bearer " + tokenProvider.createToken(testUser.getId());
+        productService.addProduct(createAddProductRequestDto(category.getId()), testUser.getId());
+
+        Product product = productRepository.findAll().get(0);
+
+
+        mockMvc.perform(post("/api/products/"+product.getId()+"/reviews")
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(addReviewRequest)))

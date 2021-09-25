@@ -11,6 +11,7 @@ import com.itda.apiserver.repository.MainCategoryRepository;
 import com.itda.apiserver.repository.ProductRepository;
 import com.itda.apiserver.repository.UserRepository;
 import com.itda.apiserver.service.ProductService;
+import com.itda.apiserver.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,13 +57,13 @@ class ProductControllerTest {
     @Autowired
     ProductService productService;
 
-    @MockBean
-    UserRepository userRepository;
-
-    @MockBean
+    @Autowired
     MainCategoryRepository mainCategoryRepository;
 
-    @MockBean
+    @Autowired
+    UserService userService;
+
+    @Autowired
     ProductRepository productRepository;
 
     @BeforeEach
@@ -77,22 +78,11 @@ class ProductControllerTest {
     void addProductE2ETest() throws Exception {
 
         MainCategory mainCategory = new MainCategory("채소");
+        User user = userService.signUp(createSignUpRequestDto());
+        String token = "Bearer " + tokenProvider.createToken(user.getId());
+        MainCategory category = mainCategoryRepository.save(mainCategory);
 
-        User user = User.builder()
-                .name("roach")
-                .email("honux")
-                .phone("01000000000")
-                .role(Role.SELLER)
-                .password("1234@@@")
-                .account("110-440-1104123")
-                .build();
-
-        String token = "Bearer " + tokenProvider.createToken(1L);
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(mainCategoryRepository.findById(anyLong())).thenReturn(Optional.of(mainCategory));
-
-        AddproductRequestDto addproductRequestDto = new AddproductRequestDto();
+        AddproductRequestDto addproductRequestDto = createAddProductRequestDto(category.getId());
 
         mockMvc.perform(post("/api/products")
                 .header(HttpHeaders.AUTHORIZATION, token)
@@ -108,20 +98,11 @@ class ProductControllerTest {
 
         MainCategory mainCategory = new MainCategory("채소");
 
-        User user = User.builder()
-                .name("roach")
-                .email("honux")
-                .phone("01000000000")
-                .role(Role.SELLER)
-                .password("1234@@@")
-                .account("110-440-1104123")
-                .build();
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(mainCategoryRepository.findById(anyLong())).thenReturn(Optional.of(mainCategory));
+        User user = userService.signUp(createSignUpRequestDto());
+        MainCategory category = mainCategoryRepository.save(mainCategory);
 
         for (int i = 0; i < 20; i++) {
-            productService.addProduct(createAddProductRequestDto(), 1L);
+            productService.addProduct(createAddProductRequestDto(category.getId()), user.getId());
         }
 
         mockMvc.perform(get("/api/products")
@@ -137,12 +118,15 @@ class ProductControllerTest {
     @DisplayName("제품 상세 조회 기능 테스트")
     void showDetailProduct() throws Exception {
 
-        User user = createUser();
-        Product product = getProduct(user);
+        MainCategory mainCategory = new MainCategory("채소");
 
-        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+        MainCategory category = mainCategoryRepository.save(mainCategory);
+        User user = userService.signUp(createSignUpRequestDto());
+        productService.addProduct(createAddProductRequestDto(category.getId()), user.getId());
 
-        mockMvc.perform(get("/api/products/1"))
+        Long pageNum = productRepository.findAll().get(0).getId();
+
+        mockMvc.perform(get("/api/products/"+pageNum))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.product.name").isString())
                 .andExpect(jsonPath("$.data.product.description").isString())
@@ -152,31 +136,4 @@ class ProductControllerTest {
 
     }
 
-    private User createUser() {
-        return User.builder()
-                .name("roach")
-                .email("honux")
-                .phone("01000000000")
-                .role(Role.SELLER)
-                .password("1234@@@")
-                .account("110-440-1104123")
-                .build();
-    }
-
-    private Product getProduct(User user) {
-        return Product.builder()
-                .title("흙당근")
-                .description("제주 바다 바람을 품은 친환경 흙당근")
-                .price(10000)
-                .salesUnit("1봉지")
-                .capacity("500g (2~4개입)")
-                .deliveryFee(2500)
-                .deliveryDescription("5만원 이상 무료배송")
-                .origin("제주")
-                .packageType("봉지")
-                .description("###제목<br><p>내용들어가고 어쩌고</p>")
-                .imageUrl("imgUrl.com")
-                .seller(user)
-                .build();
-    }
 }

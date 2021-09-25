@@ -10,7 +10,7 @@ import java.util.List;
 
 public class TestHelper {
 
-    public static AddproductRequestDto createAddProductRequestDto() {
+    public static AddproductRequestDto createAddProductRequestDto(Long categoryId) {
         AddproductRequestDto addproductRequestDto = new AddproductRequestDto();
 
         addproductRequestDto.setName("유기농 감자 1박스");
@@ -28,7 +28,7 @@ public class TestHelper {
         addproductRequestDto.setBank("국민은행");
         addproductRequestDto.setAccountHolder("호눅스");
         addproductRequestDto.setAccount("110-440-114123");
-        addproductRequestDto.setMainCategoryId(1L);
+        addproductRequestDto.setMainCategoryId(categoryId);
 
         return addproductRequestDto;
     }
