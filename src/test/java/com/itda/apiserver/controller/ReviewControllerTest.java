@@ -93,17 +93,6 @@ public class ReviewControllerTest {
                 .andDo(print());
     }
 
-    private AddReviewRequestDto createAddReviewRequestDto() {
 
-        AddReviewRequestDto addReviewRequest = new AddReviewRequestDto();
 
-        List<String> imageList = new ArrayList<>();
-        imageList.add("image url1");
-        imageList.add("image url2");
-
-        addReviewRequest.setContents("신선하고 맛있어요");
-        addReviewRequest.setImages(imageList);
-
-        return addReviewRequest;
-    }
 }
