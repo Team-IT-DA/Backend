@@ -2,39 +2,41 @@ package com.itda.apiserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itda.apiserver.domain.User;
-import com.itda.apiserver.dto.*;
-import com.itda.apiserver.jwt.TokenExtractor;
+import com.itda.apiserver.dto.EmailVerificationRequestDto;
+import com.itda.apiserver.dto.LoginRequestDto;
+import com.itda.apiserver.dto.SignUpRequestDto;
+import com.itda.apiserver.dto.UpdateProfileDto;
 import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static com.itda.apiserver.TestHelper.createSignUpRequestDto;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UserController.class)
-@Import(value = {TokenProvider.class, TokenExtractor.class})
+@SpringBootTest
+@AutoConfigureMockMvc
+@Transactional
 public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private UserService userService;
 
-    @Mock
-    private User user;
+    @Autowired
+    private TokenProvider tokenProvider;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -42,20 +44,13 @@ public class UserControllerTest {
     @DisplayName("회원 가입 기능 테스트")
     void signUp() throws Exception {
 
-        SignUpRequestDto signUpRequestDto = new SignUpRequestDto();
-        signUpRequestDto.setName("김나연");
-        signUpRequestDto.setEmail("yeon@gmail.com");
-        signUpRequestDto.setTelephone("01022223333");
-        signUpRequestDto.setPassword("1234");
-
-        when(userService.signUp(signUpRequestDto)).thenReturn(user);
+        SignUpRequestDto signUpRequestDto = createSignUpRequestDto();
 
         mockMvc.perform(post("/api/join")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(signUpRequestDto)))
                 .andExpect(status().isOk())
                 .andDo(print());
-
     }
 
     @Test
@@ -63,7 +58,7 @@ public class UserControllerTest {
     void verifyEmail() throws Exception {
 
         EmailVerificationRequestDto emailDto = new EmailVerificationRequestDto();
-        emailDto.setEmail("yeon@gmail.com");
+        emailDto.setEmail("roach@gmail.com");
 
         mockMvc.perform(get("/api/duplicateEmail")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -77,11 +72,16 @@ public class UserControllerTest {
     void login() throws Exception {
 
         LoginRequestDto loginDto = new LoginRequestDto();
-        loginDto.setEmail("yeon@gmail.com");
-        loginDto.setPassword("yeon1234");
+        loginDto.setEmail("new@gmail.com");
+        loginDto.setPassword("1234");
 
-        TokenResponseDto tokenDto = new TokenResponseDto("thisIsToken", "yeon");
-        when(userService.login(any(LoginRequestDto.class))).thenReturn(tokenDto);
+        SignUpRequestDto signUpRequestDto = new SignUpRequestDto();
+        signUpRequestDto.setEmail("new@gmail.com");
+        signUpRequestDto.setName("yeon");
+        signUpRequestDto.setTelephone("01011112222");
+        signUpRequestDto.setPassword("1234");
+
+        userService.signUp(signUpRequestDto);
 
         mockMvc.perform(post("/api/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -102,22 +102,24 @@ public class UserControllerTest {
         updateProfileDto.setTelephone("010-1234-5678");
         updateProfileDto.setPassword("yeon1234");
 
-        singUp();
+        User user = singUp();
+        String token = "Bearer " + tokenProvider.createToken(user.getId());
 
         mockMvc.perform(put("/api/myPage/user")
+                .header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateProfileDto)))
                 .andExpect(status().isOk());
     }
 
-    private void singUp() {
+    private User singUp() {
         SignUpRequestDto signUpRequestDto = new SignUpRequestDto();
         signUpRequestDto.setName("김나연");
-        signUpRequestDto.setEmail("yeon@gmail.com");
+        signUpRequestDto.setEmail("yeon12@gmail.com");
         signUpRequestDto.setTelephone("01022223333");
         signUpRequestDto.setPassword("1234");
 
-        userService.signUp(signUpRequestDto);
+        return userService.signUp(signUpRequestDto);
     }
 
 }

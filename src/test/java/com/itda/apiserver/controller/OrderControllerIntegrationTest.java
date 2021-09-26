@@ -1,7 +1,9 @@
 package com.itda.apiserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itda.apiserver.domain.*;
+import com.itda.apiserver.domain.Product;
+import com.itda.apiserver.domain.ShippingInfo;
+import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.OrderProductRequest;
 import com.itda.apiserver.dto.OrderRequestDto;
 import com.itda.apiserver.exception.OrderDuplicationException;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.itda.apiserver.TestHelper.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -54,10 +57,6 @@ class OrderControllerIntegrationTest {
     @Autowired
     private OrderService orderService;
 
-    private OrderRequestDto orderRequest;
-    private String token;
-    private User user;
-
     @BeforeEach
     void setUp() throws InterruptedException {
 
@@ -65,36 +64,46 @@ class OrderControllerIntegrationTest {
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
                 .build();
 
-        user = User.builder()
-                .name("김나연")
-                .role(Role.USER)
-                .password("password")
-                .phone("010-1111-2222")
-                .email("yeon@gmail.com")
-                .build();
-        em.persist(user);
-
-        orderRequest = getOrderRequest(user);
-        token = "Bearer " + tokenProvider.createToken(user.getId());
         TimeUnit.SECONDS.sleep(1);
     }
 
-    private OrderRequestDto getOrderRequest(User user) {
-        Product product1 = getProduct("맛있는 사과");
-        Product product2 = getProduct("충청도 곶감");
+    @Test
+    @DisplayName("주문 기능 통합 테스트")
+    void order() throws Exception {
+
+        User user = returnUserEntity();
+        em.persist(user);
+
+        String token = "Bearer " + tokenProvider.createToken(user.getId());
+
+        mockMvc.perform(post("/api/order")
+                .header("Authorization", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createOrderRequestDto(user))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.orderList").exists())
+                .andExpect(jsonPath("$.data.totalPrice").exists())
+                .andDo(print());
+    }
+
+    public OrderRequestDto createOrderRequestDto(User user) {
+
+        ShippingInfo shippingInfo = createShippingInfo(user);
+        em.persist(shippingInfo);
+
+        Product product = createProduct();
+        em.persist(product);
 
         List<OrderProductRequest> orderProductList = new ArrayList<>();
         OrderProductRequest orderProduct1 = new OrderProductRequest();
-        orderProduct1.setProductId(product1.getId());
+        orderProduct1.setProductId(product.getId());
         orderProduct1.setCount(1);
         orderProductList.add(orderProduct1);
 
         OrderProductRequest orderProduct2 = new OrderProductRequest();
-        orderProduct2.setProductId(product2.getId());
+        orderProduct2.setProductId(product.getId());
         orderProduct2.setCount(2);
         orderProductList.add(orderProduct2);
-
-        ShippingInfo shippingInfo = getShippingInfo(user);
 
         OrderRequestDto orderRequest = new OrderRequestDto();
         orderRequest.setShippingAddressId(shippingInfo.getId());
@@ -106,61 +115,26 @@ class OrderControllerIntegrationTest {
         return orderRequest;
     }
 
-    private Product getProduct(String title) {
-        Product product = Product.builder()
-                .title(title)
-                .price(10000)
-                .deliveryFee(3000)
-                .account("111-222-333")
-                .accountHolder("김나연")
-                .bank("우리은행")
-                .capacity("1kg")
-                .description("<p>맛있어요!</p>")
-                .origin("국산")
-                .packageType("박스")
-                .salesUnit("1박스")
-                .build();
-
-        em.persist(product);
-        return product;
-    }
-
-    private ShippingInfo getShippingInfo(User user) {
-        Address address = new Address("서울특별시", "강남구", "역삼동", 40, 4, 12345);
-        ShippingInfo shippingInfo = new ShippingInfo(address, user, "김나연", "문 앞에 놔주세요", "010-1111-2222", false);
-        em.persist(shippingInfo);
-        return shippingInfo;
-    }
-
-    @Test
-    @DisplayName("주문 기능 통합 테스트")
-    void order() throws Exception {
-
-        mockMvc.perform(post("/api/order")
-                .header("Authorization", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(orderRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.orderList").exists())
-                .andExpect(jsonPath("$.data.totalPrice").exists())
-                .andDo(print());
-    }
-
     @Test
     @DisplayName("주문 중복 요청 시 OrderDuplication 예외가 발생한다.")
     void duplicatedOrder() throws Exception {
 
+        User user = returnUserEntity();
+        em.persist(user);
+
+        String token = "Bearer " + tokenProvider.createToken(user.getId());
+
         mockMvc.perform(post("/api/order")
                 .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(orderRequest)))
+                .content(objectMapper.writeValueAsString(createOrderRequestDto(user))))
                 .andExpect(status().isOk());
 
         assertThatThrownBy(() ->
                 mockMvc.perform(post("/api/order")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(orderRequest)))
+                        .content(objectMapper.writeValueAsString(createOrderRequestDto(user))))
         ).hasCause(new OrderDuplicationException());
     }
 
@@ -168,7 +142,12 @@ class OrderControllerIntegrationTest {
     @DisplayName("마이페이지 주문 조회 기능 테스트")
     void showMyOrders() throws Exception {
 
-        orderService.order(user.getId(), orderRequest);
+        User user = returnUserEntity();
+        em.persist(user);
+
+        String token = "Bearer " + tokenProvider.createToken(user.getId());
+
+        orderService.order(user.getId(), createOrderRequestDto(user));
 
         mockMvc.perform(get("/api/myPage/orders")
                 .header("Authorization", token)
@@ -189,8 +168,13 @@ class OrderControllerIntegrationTest {
     @DisplayName("마이페이지 주문 조회 기능 페이지네이션 테스트")
     void showMyOrdersPagination() throws Exception {
 
+        User user = returnUserEntity();
+        em.persist(user);
+
+        String token = "Bearer " + tokenProvider.createToken(user.getId());
+
         for (int i = 0; i < 5; i++) {
-            orderService.order(user.getId(), orderRequest);
+            orderService.order(user.getId(), createOrderRequestDto(user));
             TimeUnit.SECONDS.sleep(1);
         }
 
@@ -204,4 +188,5 @@ class OrderControllerIntegrationTest {
                 .andExpect(jsonPath("$.data.orderSheetList", hasSize(3)))
                 .andDo(print());
     }
+
 }

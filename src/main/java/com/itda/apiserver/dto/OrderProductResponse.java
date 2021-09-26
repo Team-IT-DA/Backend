@@ -1,10 +1,9 @@
 package com.itda.apiserver.dto;
 
-import lombok.AllArgsConstructor;
+import com.itda.apiserver.domain.Order;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class OrderProductResponse {
 
     private String productName;
@@ -15,4 +14,15 @@ public class OrderProductResponse {
     private String bank;
     private String accountHolder;
     private String account;
+
+    public OrderProductResponse(Order order) {
+        productName = order.getProduct().getTitle();
+        productId = order.getProduct().getId();
+        price = order.getProduct().getPrice();
+        shippingFee = order.getProduct().getDeliveryFee();
+        count = order.getQuantity();
+        bank = order.getProduct().getBank();
+        accountHolder = order.getProduct().getAccountHolder();
+        account = order.getProduct().getAccount();
+    }
 }
