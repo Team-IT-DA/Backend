@@ -97,4 +97,15 @@ class ProductServiceTest {
         verify(productRepository, times(1)).findBySellerName(anyString());
     }
 
+    @Test
+    @DisplayName("카테고리 별 제품 조회 테스트")
+    void getProductsByCategory() {
+
+        when(productRepository.findByCategory(anyString())).thenReturn(productList);
+
+        productService.getProductsByCategory("양식");
+
+        verify(productRepository, times(1)).findByCategory(anyString());
+    }
+
 }

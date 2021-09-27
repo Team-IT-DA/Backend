@@ -2,14 +2,11 @@ package com.itda.apiserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itda.apiserver.domain.MainCategory;
-import com.itda.apiserver.domain.Product;
-import com.itda.apiserver.domain.Role;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddproductRequestDto;
 import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.repository.MainCategoryRepository;
 import com.itda.apiserver.repository.ProductRepository;
-import com.itda.apiserver.repository.UserRepository;
 import com.itda.apiserver.service.ProductService;
 import com.itda.apiserver.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,17 +23,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import java.util.Optional;
-
+import static com.itda.apiserver.TestHelper.*;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static com.itda.apiserver.TestHelper.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -126,7 +118,7 @@ class ProductControllerTest {
 
         Long pageNum = productRepository.findAll().get(0).getId();
 
-        mockMvc.perform(get("/api/products/"+pageNum))
+        mockMvc.perform(get("/api/products/" + pageNum))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.product.name").isString())
                 .andExpect(jsonPath("$.data.product.description").isString())
@@ -134,6 +126,27 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data.product.seller.name").isString())
                 .andDo(print());
 
+    }
+
+    @Test
+    @DisplayName("카테고리 별 제품 조회 테스트")
+    void showProductsByCategory() throws Exception {
+
+        MainCategory category = createMainCategory();
+        mainCategoryRepository.save(category);
+
+        User user = userService.signUp(createSignUpRequestDto());
+
+        productService.addProduct(createAddProductRequestDto(category.getId()), user.getId());
+
+        mockMvc.perform(get("/api/products")
+                .param("category", category.getName()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.products").isArray())
+                .andExpect(jsonPath("$.data.products[0].id").isNumber())
+                .andExpect(jsonPath("$.data.products[0].productName").isString())
+                .andExpect(jsonPath("$.data.products[0].sellerName").isString())
+                .andDo(print());
     }
 
 }
