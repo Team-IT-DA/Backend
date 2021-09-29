@@ -72,6 +72,12 @@ public class ProductController {
         return ApiResult.ok(new SearchProductDto(getProductDtos(products)));
     }
 
+    @GetMapping(params = "category")
+    public ApiResult<SearchProductDto> showProductsByCategory(@RequestParam String category) {
+        List<Product> products = productService.getProductsByCategory(category);
+        return ApiResult.ok(new SearchProductDto(getProductDtos(products)));
+    }
+
     private List<GetAllProductDto> getProductDtos(List<Product> products) {
         return products.stream()
                 .map(product -> new GetAllProductDto(product.getId(), product.getImageUrl(), product.getTitle(),

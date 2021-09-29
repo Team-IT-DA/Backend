@@ -12,18 +12,21 @@ import com.itda.apiserver.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final MainCategoryRepository mainCategoryRepository;
 
+    @Transactional
     public void addProduct(AddproductRequestDto addProductDto, Long userId) {
 
         User seller = userRepository.findById(userId).orElseThrow(RuntimeException::new);
@@ -72,6 +75,10 @@ public class ProductService {
 
     public List<Product> getProductsBySellerName(String sellerName) {
         return productRepository.findBySellerName(sellerName);
+    }
+
+    public List<Product> getProductsByCategory(String category) {
+        return productRepository.findByCategory(category);
     }
 
 }

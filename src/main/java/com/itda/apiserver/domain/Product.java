@@ -29,6 +29,20 @@ public class Product extends Core {
     private String accountHolder;
     private String account;
 
+    @Lob
+    private String description;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "main_category_id")
+    private MainCategory mainCategory;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "seller")
+    private User seller;
+
+    @OneToMany(mappedBy = "product")
+    private final List<Review> reviews = new ArrayList<>();
+
     @Builder
     public Product(String imageUrl, String title, String subTitle, Integer price, Integer deliveryFee, String deliveryDescription, String salesUnit, String capacity, String origin, String packageType, String notice, String bank, String accountHolder, String account, String description, MainCategory mainCategory, User seller) {
         this.imageUrl = imageUrl;
@@ -49,20 +63,6 @@ public class Product extends Core {
         this.mainCategory = mainCategory;
         this.seller = seller;
     }
-
-    @Lob
-    private String description;
-
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "main_category_id")
-    private MainCategory mainCategory;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "seller")
-    private User seller;
-
-    @OneToMany(mappedBy = "product")
-    private final List<Review> reviews = new ArrayList<>();
 
     public boolean hasMyReview(Long userId) {
         for (Review review : reviews) {
