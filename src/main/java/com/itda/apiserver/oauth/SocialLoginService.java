@@ -4,11 +4,11 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.TokenResponseDto;
 import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.jwt.TokenProvider;
-import com.itda.apiserver.oauth.kakao.KakaoLoginService;
-import com.itda.apiserver.oauth.naver.NaverLoginService;
 import com.itda.apiserver.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -16,15 +16,15 @@ public class SocialLoginService {
 
     private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
-    private final NaverLoginService naverLoginService;
-    private final KakaoLoginService kakaoLoginService;
+    private final Map<String, OauthProvider> oauthProviderMap;
+
 
     public TokenResponseDto naverLogin(String code) {
-        return login(code, naverLoginService);
+        return login(code, oauthProviderMap.get("naverLoginService"));
     }
 
     public TokenResponseDto kakaoLogin(String code) {
-        return login(code, kakaoLoginService);
+        return login(code, oauthProviderMap.get("kakaoLoginService"));
     }
 
     private TokenResponseDto login(String code, OauthProvider oauthProvider) {
