@@ -2,10 +2,7 @@ package com.itda.apiserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itda.apiserver.domain.User;
-import com.itda.apiserver.dto.EmailVerificationRequestDto;
-import com.itda.apiserver.dto.LoginRequestDto;
-import com.itda.apiserver.dto.SignUpRequestDto;
-import com.itda.apiserver.dto.UpdateProfileDto;
+import com.itda.apiserver.dto.*;
 import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.service.UserService;
 import org.junit.jupiter.api.DisplayName;
@@ -110,6 +107,25 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateProfileDto)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("상품 판매자 프로필 등록 테스트")
+    void enrollSellerTest() throws Exception {
+
+        AddSellerInfoDto addSellerInfoDto = new AddSellerInfoDto();
+        addSellerInfoDto.setImgUrl("https://www.naver.com");
+        addSellerInfoDto.setDescription("판매자!");
+
+        User user = singUp();
+        String token = "Bearer " + tokenProvider.createToken(user.getId());
+
+        mockMvc.perform(post("/api/seller")
+                        .header(HttpHeaders.AUTHORIZATION, token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(addSellerInfoDto)))
+                        .andExpect(status().isOk());
+
     }
 
     private User singUp() {
