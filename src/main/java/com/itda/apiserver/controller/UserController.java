@@ -37,4 +37,13 @@ public class UserController {
         TokenResponseDto response = userService.login(requestDto);
         return ApiResult.ok(response);
     }
+
+    @LoginRequired
+    @PostMapping("/api/seller")
+    public ApiResult<Void> enrollSeller(@RequestBody AddSellerInfoDto addSellerInfoDto, @UserId Long userId) {
+        userService.enrollSeller(addSellerInfoDto, userId);
+        return ApiResult.ok(null);
+    }
+
+
 }

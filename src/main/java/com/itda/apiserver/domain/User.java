@@ -62,4 +62,10 @@ public class User extends Core {
     public boolean isPasswordMatching(String password) {
         return this.password.equals(password);
     }
+
+    public void updateSellerInfo(String imgUrl, String description) {
+        this.sellerImageUrl = imgUrl;
+        this.sellerDescription = description;
+    }
+
 }

@@ -1,10 +1,7 @@
 package com.itda.apiserver.service;
 
 import com.itda.apiserver.domain.User;
-import com.itda.apiserver.dto.LoginRequestDto;
-import com.itda.apiserver.dto.SignUpRequestDto;
-import com.itda.apiserver.dto.TokenResponseDto;
-import com.itda.apiserver.dto.UpdateProfileDto;
+import com.itda.apiserver.dto.*;
 import com.itda.apiserver.exception.EmailDuplicationException;
 import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.exception.WrongPasswordException;
@@ -52,4 +49,11 @@ public class UserService {
         String token = tokenProvider.createToken(user.getId());
         return new TokenResponseDto(token, user.getName());
     }
+
+    public void enrollSeller(AddSellerInfoDto addSellerInfoDto, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        user.updateSellerInfo(addSellerInfoDto.getImgUrl(), addSellerInfoDto.getDescription());
+        userRepository.save(user);
+    }
+
 }
