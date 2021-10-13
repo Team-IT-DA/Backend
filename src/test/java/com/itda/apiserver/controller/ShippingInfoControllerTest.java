@@ -55,7 +55,7 @@ class ShippingInfoControllerTest {
 
         String token = "Bearer " + tokenProvider.createToken(user.getId());
 
-        mockMvc.perform(post("/api/shippingInfo")
+        mockMvc.perform(post("/api/shippingInfos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", token)
                 .content(objectMapper.writeValueAsString(shippingInfoDto)))
