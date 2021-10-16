@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://34.64.87.227:3306/itda?autoReconnect=true
+    url: jdbc:mysql://13.125.238.234:3306/itda?autoReconnect=true
     username: root
     password: 1234
   jpa:
@@ -15,7 +15,7 @@ spring:
 
   redis:
     port: 6379
-    host: 34.125.189.106
+    host: 13.125.238.234
     password: itda
 
 
