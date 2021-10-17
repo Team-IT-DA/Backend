@@ -1,11 +1,9 @@
 package com.itda.apiserver.service;
 
 import com.itda.apiserver.domain.User;
-import com.itda.apiserver.dto.EmailVerificationRequestDto;
-import com.itda.apiserver.dto.LoginRequestDto;
-import com.itda.apiserver.dto.SignUpRequestDto;
-import com.itda.apiserver.dto.UpdateProfileDto;
+import com.itda.apiserver.dto.*;
 import com.itda.apiserver.exception.EmailDuplicationException;
+import com.itda.apiserver.exception.SellerValidationError;
 import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.exception.WrongPasswordException;
 import com.itda.apiserver.jwt.TokenProvider;
@@ -146,6 +144,41 @@ public class UserServiceTest {
 
         verify(userRepository, times(1)).findById(anyLong());
         verify(userRepository, times(1)).save(any());
+    }
+
+    @Test
+    @DisplayName("상품 판매자 정상 등록 테스트")
+    void enrollToSeller() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(user.getId()).thenReturn(1L);
+        when(user.isSeller()).thenReturn(true);
+
+        AddSellerInfoDto addSellerInfoDto = new AddSellerInfoDto();
+        addSellerInfoDto.setDescription("Seller");
+        addSellerInfoDto.setImgUrl("https://www.naver.com");
+
+        userService.enrollSeller(addSellerInfoDto, 1L);
+
+        verify(userRepository, times(1)).findById(1L);
+        verify(user, times(1)).isSeller();
+        verify(user, times(1)).updateSellerInfo(anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("상품 판매자가 아닌데 등록하려할시 SellerValidationError을 리턴하는 테스트")
+    void failToEnrollSeller() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(user.getId()).thenReturn(1L);
+        when(user.isSeller()).thenReturn(false);
+
+        AddSellerInfoDto addSellerInfoDto = new AddSellerInfoDto();
+        addSellerInfoDto.setDescription("Seller");
+        addSellerInfoDto.setImgUrl("https://www.naver.com");
+
+        assertThrows(SellerValidationError.class, () -> userService.enrollSeller(addSellerInfoDto, 1L));
+
+        verify(userRepository, times(1)).findById(1L);
+        verify(user, times(1)).isSeller();
     }
 
 }
