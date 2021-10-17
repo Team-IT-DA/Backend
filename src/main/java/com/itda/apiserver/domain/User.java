@@ -68,4 +68,8 @@ public class User extends Core {
         this.sellerDescription = description;
     }
 
+    public boolean isSeller() {
+        return this.role == Role.SELLER;
+    }
+
 }
