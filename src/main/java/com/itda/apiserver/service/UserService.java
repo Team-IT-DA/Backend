@@ -3,6 +3,7 @@ package com.itda.apiserver.service;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.*;
 import com.itda.apiserver.exception.EmailDuplicationException;
+import com.itda.apiserver.exception.SellerValidationError;
 import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.exception.WrongPasswordException;
 import com.itda.apiserver.jwt.TokenProvider;
@@ -52,6 +53,7 @@ public class UserService {
 
     public void enrollSeller(AddSellerInfoDto addSellerInfoDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        if (user.isSeller()) throw new SellerValidationError();
         user.updateSellerInfo(addSellerInfoDto.getImgUrl(), addSellerInfoDto.getDescription());
         userRepository.save(user);
     }
