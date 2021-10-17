@@ -18,7 +18,7 @@ public class ShippingInfoController {
     private final ShippingInfoService shippingInfoService;
 
     @LoginRequired
-    @PostMapping("/api/shippingInfo")
+    @PostMapping("/api/shippingInfos")
     public ApiResult<ShippingInfoResponse> addShippingInfo(@UserId Long userId, @RequestBody ShippingInfoDto shippingInfoDto) {
         Long shippingInfoId = shippingInfoService.addShippingInfo(userId, shippingInfoDto);
         return ApiResult.ok(new ShippingInfoResponse(shippingInfoId));
