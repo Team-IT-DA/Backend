@@ -117,7 +117,7 @@ public class UserControllerTest {
         addSellerInfoDto.setImgUrl("https://www.naver.com");
         addSellerInfoDto.setDescription("판매자!");
 
-        User user = singUp();
+        User user = singUpToSeller();
         String token = "Bearer " + tokenProvider.createToken(user.getId());
 
         mockMvc.perform(post("/api/seller")
@@ -137,5 +137,17 @@ public class UserControllerTest {
 
         return userService.signUp(signUpRequestDto);
     }
+
+    private User singUpToSeller() {
+        SignUpRequestDto signUpRequestDto = new SignUpRequestDto();
+        signUpRequestDto.setName("김나연");
+        signUpRequestDto.setEmail("yeon12@gmail.com");
+        signUpRequestDto.setTelephone("01022223333");
+        signUpRequestDto.setPassword("1234");
+        signUpRequestDto.setAuthCode("SELLER");
+
+        return userService.signUp(signUpRequestDto);
+    }
+
 
 }
