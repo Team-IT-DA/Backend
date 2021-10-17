@@ -6,6 +6,8 @@ import com.itda.apiserver.dto.CategoryResponseDto;
 import com.itda.apiserver.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -26,4 +28,13 @@ public class CategoryController {
 
         return ApiResult.ok(new CategoryResponseDto(categoryNames));
     }
+
+    @PostMapping("/test/categories")
+    public ApiResult<Void> addCategory(@RequestBody String name) {
+
+        categoryService.addCategory(name);
+
+        return ApiResult.ok(null);
+    }
+
 }

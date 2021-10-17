@@ -15,6 +15,8 @@ public class CategoryService {
 
     private final MainCategoryRepository categoryRepository;
 
+    public void addCategory(String name) { categoryRepository.save(new MainCategory(name));}
+
     public List<MainCategory> getCategories() {
         return categoryRepository.findAll();
     }
