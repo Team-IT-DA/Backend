@@ -40,6 +40,10 @@ dependencies {
 			"javax.annotation:javax.annotation-api",
 			"com.querydsl:querydsl-apt:4.4.0:jpa")
 
+	//https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
+	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+
 }
 
 sourceSets {
