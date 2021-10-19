@@ -53,7 +53,9 @@ public class UserService {
 
     public void enrollSeller(AddSellerInfoDto addSellerInfoDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        if (!user.isSeller()) throw new SellerValidationException();
+        if (!user.isSeller()) {
+            throw new SellerValidationException();
+        }
         user.updateSellerInfo(addSellerInfoDto.getImgUrl(), addSellerInfoDto.getDescription());
         userRepository.save(user);
     }
