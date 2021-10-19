@@ -2,10 +2,7 @@ package com.itda.apiserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itda.apiserver.domain.User;
-import com.itda.apiserver.dto.EmailVerificationRequestDto;
-import com.itda.apiserver.dto.LoginRequestDto;
-import com.itda.apiserver.dto.SignUpRequestDto;
-import com.itda.apiserver.dto.UpdateProfileDto;
+import com.itda.apiserver.dto.*;
 import com.itda.apiserver.jwt.TokenProvider;
 import com.itda.apiserver.service.UserService;
 import org.junit.jupiter.api.DisplayName;
@@ -112,6 +109,25 @@ public class UserControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @DisplayName("상품 판매자 프로필 등록 테스트")
+    void enrollSellerTest() throws Exception {
+
+        AddSellerInfoDto addSellerInfoDto = new AddSellerInfoDto();
+        addSellerInfoDto.setImgUrl("https://www.naver.com");
+        addSellerInfoDto.setDescription("판매자!");
+
+        User user = singUpToSeller();
+        String token = "Bearer " + tokenProvider.createToken(user.getId());
+
+        mockMvc.perform(post("/api/seller")
+                        .header(HttpHeaders.AUTHORIZATION, token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(addSellerInfoDto)))
+                        .andExpect(status().isOk());
+
+    }
+
     private User singUp() {
         SignUpRequestDto signUpRequestDto = new SignUpRequestDto();
         signUpRequestDto.setName("김나연");
@@ -121,5 +137,17 @@ public class UserControllerTest {
 
         return userService.signUp(signUpRequestDto);
     }
+
+    private User singUpToSeller() {
+        SignUpRequestDto signUpRequestDto = new SignUpRequestDto();
+        signUpRequestDto.setName("김나연");
+        signUpRequestDto.setEmail("yeon12@gmail.com");
+        signUpRequestDto.setTelephone("01022223333");
+        signUpRequestDto.setPassword("1234");
+        signUpRequestDto.setAuthCode("SELLER");
+
+        return userService.signUp(signUpRequestDto);
+    }
+
 
 }
