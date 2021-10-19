@@ -3,7 +3,7 @@ package com.itda.apiserver.service;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.*;
 import com.itda.apiserver.exception.EmailDuplicationException;
-import com.itda.apiserver.exception.SellerValidationError;
+import com.itda.apiserver.exception.SellerValidationException;
 import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.exception.WrongPasswordException;
 import com.itda.apiserver.jwt.TokenProvider;
@@ -175,7 +175,7 @@ public class UserServiceTest {
         addSellerInfoDto.setDescription("Seller");
         addSellerInfoDto.setImgUrl("https://www.naver.com");
 
-        assertThrows(SellerValidationError.class, () -> userService.enrollSeller(addSellerInfoDto, 1L));
+        assertThrows(SellerValidationException.class, () -> userService.enrollSeller(addSellerInfoDto, 1L));
 
         verify(userRepository, times(1)).findById(1L);
         verify(user, times(1)).isSeller();
