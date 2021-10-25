@@ -39,7 +39,7 @@ public class SocialLoginService {
         User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
         String token = tokenProvider.createToken(user.getId());
 
-        return new TokenResponseDto(token, user.getName());
+        return new TokenResponseDto(token, user.getName(), user.isSeller());
     }
 
     private boolean isNewUser(String email) {

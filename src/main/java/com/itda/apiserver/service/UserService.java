@@ -48,7 +48,7 @@ public class UserService {
         }
 
         String token = tokenProvider.createToken(user.getId());
-        return new TokenResponseDto(token, user.getName());
+        return new TokenResponseDto(token, user.getName(), user.isSeller());
     }
 
     public void enrollSeller(AddSellerInfoDto addSellerInfoDto, Long userId) {
