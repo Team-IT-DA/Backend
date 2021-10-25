@@ -9,5 +9,6 @@ public class TokenResponseDto {
 
     private String token;
     private String name;
+    private boolean isSeller;
 
 }
