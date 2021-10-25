@@ -104,6 +104,6 @@ public class TestHelper {
 
     public static ShippingInfo createShippingInfo(User user) {
         Address address = new Address("서울특별시", "강남구", "역삼동", 40, 4, 12345);
-        return new ShippingInfo(address, user, "김나연", "문 앞에 놔주세요", "010-1111-2222", false);
+        return new ShippingInfo(address, user, "김나연", "문 앞에 놔주세요", "010-1111-2222", true);
     }
 }
