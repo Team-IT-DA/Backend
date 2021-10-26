@@ -6,12 +6,15 @@ import com.itda.apiserver.domain.ReviewImage;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.AddReviewRequestDto;
 import com.itda.apiserver.dto.MyReviewsDto;
+import com.itda.apiserver.dto.ProductReviewsInfoDto;
+import com.itda.apiserver.dto.ReviewsOfProductDto;
 import com.itda.apiserver.exception.ProductNotFountException;
 import com.itda.apiserver.exception.UserNotFoundException;
 import com.itda.apiserver.repository.ProductRepository;
 import com.itda.apiserver.repository.ReviewRepository;
 import com.itda.apiserver.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,5 +50,28 @@ public class ReviewService {
                 review.getProduct().getTitle(),
                 review.getCreatedAt()
         ))).collect(Collectors.toList());
+    }
+
+    public ProductReviewsInfoDto getProductReviews(Long productId, Pageable pageable) {
+
+        Product product = productRepository.findById(productId).orElseThrow(ProductNotFountException::new);
+        Long totalCount = reviewRepository.countByProduct(product);
+        List<ReviewsOfProductDto> reviewsOfProductDtos = null;
+
+        if (totalCount > 0) {
+            reviewsOfProductDtos = reviewRepository
+                    .findAllByProduct(product, pageable)
+                    .stream().map((review) -> {
+                        return new ReviewsOfProductDto(
+                                review.getId(),
+                                review.getUser().getName(),
+                                review.getUser().getSellerImageUrl(),
+                                review.getCreatedAt(),
+                                review.getContent(),
+                                review.getReviewImages());
+                    }).collect(Collectors.toList());
+        }
+
+        return new ProductReviewsInfoDto(totalCount, reviewsOfProductDtos);
     }
 }
