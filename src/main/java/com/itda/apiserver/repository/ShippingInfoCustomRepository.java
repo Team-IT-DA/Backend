@@ -14,6 +14,8 @@ import static com.itda.apiserver.domain.QShippingInfo.shippingInfo;
 @RequiredArgsConstructor
 public class ShippingInfoCustomRepository {
 
+    private static final int NUM_OF_SHIPPING_INFO = 4;
+
     private final JPAQueryFactory jpaQueryFactory;
 
     public List<ShippingInfo> findRecentById(Long userId) {
@@ -22,7 +24,7 @@ public class ShippingInfoCustomRepository {
                 .innerJoin(orderSheet)
                 .on(orderSheet.shippingInfo.id.eq(shippingInfo.id))
                 .orderBy(orderSheet.createdAt.desc())
-                .limit(4)
+                .limit(NUM_OF_SHIPPING_INFO)
                 .fetch();
     }
 }
