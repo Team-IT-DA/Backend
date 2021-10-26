@@ -1,8 +1,10 @@
 package com.itda.apiserver.service;
 
+import com.itda.apiserver.domain.Address;
 import com.itda.apiserver.domain.ShippingInfo;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.ShippingInfoDto;
+import com.itda.apiserver.repository.ShippingInfoCustomRepository;
 import com.itda.apiserver.repository.ShippingInfoRepository;
 import com.itda.apiserver.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -27,6 +30,9 @@ class ShippingInfoServiceTest {
     private ShippingInfoRepository shippingInfoRepository;
 
     @MockBean
+    private ShippingInfoCustomRepository shippingInfoCustomRepository;
+
+    @MockBean
     private UserRepository userRepository;
 
     @Mock
@@ -37,6 +43,9 @@ class ShippingInfoServiceTest {
 
     @Mock
     private ShippingInfo shippingInfo;
+
+    @Mock
+    private Address address;
 
 
     @Test
@@ -72,5 +81,21 @@ class ShippingInfoServiceTest {
         verify(shippingInfo, times(0)).beNotDefault();
         verify(userRepository, times(1)).findById(anyLong());
         verify(shippingInfoRepository, times(1)).save(any(ShippingInfo.class));
+    }
+
+    @Test
+    @DisplayName("배송지 조회 테스트")
+    void getShowShippingInfoDto() {
+
+        when(shippingInfoRepository.existsByUserIdAndDefaultYNTrue(anyLong())).thenReturn(true);
+        when(shippingInfoRepository.findByUserIdAndDefaultYNTrue(anyLong())).thenReturn(Optional.of(shippingInfo));
+        when(shippingInfo.getAddress()).thenReturn(address);
+        when(shippingInfoCustomRepository.findRecentById(anyLong())).thenReturn(List.of(shippingInfo));
+
+        shippingInfoService.getShowShippingInfoDto(1L);
+
+        verify(shippingInfoRepository, times(1)).existsByUserIdAndDefaultYNTrue(anyLong());
+        verify(shippingInfoRepository, times(1)).findByUserIdAndDefaultYNTrue(anyLong());
+        verify(shippingInfoCustomRepository, times(1)).findRecentById(anyLong());
     }
 }

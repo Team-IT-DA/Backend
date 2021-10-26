@@ -1,6 +1,7 @@
 package com.itda.apiserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itda.apiserver.domain.ShippingInfo;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.ShippingInfoDto;
 import com.itda.apiserver.jwt.TokenProvider;
@@ -16,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
-import static com.itda.apiserver.TestHelper.createShippingInfoDte;
-import static com.itda.apiserver.TestHelper.returnUserEntity;
+import static com.itda.apiserver.TestHelper.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -64,4 +65,24 @@ class ShippingInfoControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("기본 배송지와 최근 배송지 조회 테스트")
+    void showShippingInfo() throws Exception {
+
+        User user = returnUserEntity();
+        em.persist(user);
+
+        ShippingInfo shippingInfo = createShippingInfo(user);
+        em.persist(shippingInfo);
+
+        String token = "Bearer " + tokenProvider.createToken(user.getId());
+
+        mockMvc.perform(get("/api/shippingInfos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.defaultShippingAddress.id").isNumber())
+                .andExpect(jsonPath("$.data.shippingAddress").isArray())
+                .andDo(print());
+    }
 }

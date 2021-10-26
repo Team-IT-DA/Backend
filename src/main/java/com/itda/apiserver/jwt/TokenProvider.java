@@ -11,12 +11,14 @@ import java.util.Date;
 @Component
 public class TokenProvider {
 
+    private static final int SEVEN_DAYS = 7;
+
     private final String secretKey;
     private final long validityInMilliseconds;
 
     public TokenProvider(@Value("${jwt.secret}") String secretKey, @Value("${jwt.token-validity-in-seconds}") long validityInSeconds) {
         this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
-        this.validityInMilliseconds = validityInSeconds * 1000;
+        this.validityInMilliseconds = validityInSeconds * 1000 * SEVEN_DAYS;
     }
 
     public String createToken(Long subject) {
