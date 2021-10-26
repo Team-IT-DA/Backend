@@ -6,6 +6,7 @@ import com.itda.apiserver.domain.Product;
 import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.*;
 import com.itda.apiserver.service.ProductService;
+import com.itda.apiserver.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class ProductController {
 
     private final ProductService productService;
+    private final ReviewService reviewService;
 
     @GetMapping
     public ApiResult<List<GetAllProductDto>> getProduct(Pageable pageable) {
@@ -36,6 +38,11 @@ public class ProductController {
     public ApiResult<DetailProductResponse> showDetailProduct(@PathVariable Long productId) {
         Product product = productService.getProduct(productId);
         return ApiResult.ok(new DetailProductResponse(getDetailProduct(product)));
+    }
+
+    @GetMapping("/{productId}/reviews")
+    public ApiResult<ProductReviewsInfoDto> getProductReviews(@PathVariable Long productId, Pageable pageable) {
+        return ApiResult.ok(reviewService.getProductReviews(productId, pageable));
     }
 
     private DetailProduct getDetailProduct(Product product) {
