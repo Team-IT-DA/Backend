@@ -11,6 +11,7 @@ public class GetAllProductDto {
 
     private Long id;
     private String imageUrl;
+    private String description;
     private String productName;
     private String sellerName;
     private int price;
