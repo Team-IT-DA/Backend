@@ -58,7 +58,7 @@ public class ProductController {
         return DetailProduct.builder()
                 .id(product.getId())
                 .name(product.getTitle())
-                .supTitle(product.getDescription())
+                .supTitle(product.getSubTitle())
                 .price(product.getPrice())
                 .salesUnit(product.getSalesUnit())
                 .capacity(product.getCapacity())
@@ -95,8 +95,13 @@ public class ProductController {
 
     private List<GetAllProductDto> getProductDtos(List<Product> products) {
         return products.stream()
-                .map(product -> new GetAllProductDto(product.getId(), product.getImageUrl(), product.getDescription(), product.getTitle(),
-                        product.getSeller().getName(), product.getPrice()))
+                .map(product -> new GetAllProductDto(
+                        product.getId(),
+                        product.getImageUrl(),
+                        product.getDescription(),
+                        product.getTitle(),
+                        product.getSeller().getName(),
+                        product.getPrice()))
                 .collect(Collectors.toList());
     }
 }

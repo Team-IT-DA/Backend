@@ -61,7 +61,13 @@ public class ProductService {
         return productRepository
                 .findAll(pageable)
                 .stream()
-                .map(product -> new GetAllProductDto(product.getId(), product.getImageUrl(), product.getDescription(), product.getTitle(), product.getSeller().getName(), product.getPrice()))
+                .map(product -> new GetAllProductDto(
+                        product.getId(),
+                        product.getImageUrl(),
+                        product.getDescription(),
+                        product.getTitle(),
+                        product.getSeller().getName(),
+                        product.getPrice()))
                 .collect(Collectors.toList());
     }
 
