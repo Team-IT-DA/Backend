@@ -9,7 +9,7 @@ public class DetailProduct {
 
     private Long id;
     private String name;
-    private String supTitle;
+    private String subTitle;
     private int price;
     private String salesUnit;
     private String capacity;

@@ -58,7 +58,7 @@ public class ProductController {
         return DetailProduct.builder()
                 .id(product.getId())
                 .name(product.getTitle())
-                .supTitle(product.getSubTitle())
+                .subTitle(product.getSubTitle())
                 .price(product.getPrice())
                 .salesUnit(product.getSalesUnit())
                 .capacity(product.getCapacity())
