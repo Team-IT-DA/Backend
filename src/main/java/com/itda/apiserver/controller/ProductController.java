@@ -7,6 +7,7 @@ import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.*;
 import com.itda.apiserver.service.ProductService;
 import com.itda.apiserver.service.ReviewService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -68,18 +69,21 @@ public class ProductController {
     }
 
     @GetMapping(params = "productName")
+    @ApiOperation(value = "제품 명으로 조회")
     public ApiResult<SearchProductDto> showProductsByName(@RequestParam String productName) {
         List<Product> products = productService.getProductsByName(productName);
         return ApiResult.ok(new SearchProductDto(getProductDtos(products)));
     }
 
     @GetMapping(params = "sellerName")
+    @ApiOperation(value = "판매자 명으로 조회")
     public ApiResult<SearchProductDto> showProductsBySellerName(@RequestParam String sellerName) {
         List<Product> products = productService.getProductsBySellerName(sellerName);
         return ApiResult.ok(new SearchProductDto(getProductDtos(products)));
     }
 
     @GetMapping(params = "category")
+    @ApiOperation(value = "카테고리 명으로 조회")
     public ApiResult<SearchProductDto> showProductsByCategory(@RequestParam String category) {
         List<Product> products = productService.getProductsByCategory(category);
         return ApiResult.ok(new SearchProductDto(getProductDtos(products)));
