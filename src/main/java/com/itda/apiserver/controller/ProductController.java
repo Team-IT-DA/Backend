@@ -24,24 +24,28 @@ public class ProductController {
     private final ReviewService reviewService;
 
     @GetMapping
+    @ApiOperation(value = "제품 전체 조회")
     public ApiResult<List<GetAllProductDto>> getProduct(Pageable pageable) {
         return ApiResult.ok(productService.getProducts(pageable));
     }
 
     @PostMapping
     @LoginRequired
+    @ApiOperation(value = "제품 추가")
     public ApiResult<Void> addProduct(@RequestBody AddproductRequestDto addproductRequestDto, @UserId Long userId) {
         productService.addProduct(addproductRequestDto, userId);
         return ApiResult.ok(null);
     }
 
     @GetMapping("/{productId}")
+    @ApiOperation(value = "제품 상세 조회")
     public ApiResult<DetailProductResponse> showDetailProduct(@PathVariable Long productId) {
         Product product = productService.getProduct(productId);
         return ApiResult.ok(new DetailProductResponse(getDetailProduct(product)));
     }
 
     @GetMapping("/{productId}/reviews")
+    @ApiOperation(value = "제품 별 리뷰 조회")
     public ApiResult<ProductReviewsInfoDto> getProductReviews(@PathVariable Long productId, Pageable pageable) {
         return ApiResult.ok(reviewService.getProductReviews(productId, pageable));
     }
