@@ -21,42 +21,12 @@ public class CartService {
     private final ProductRepository productRepository;
 
     public void addProduct(CartProduct cartRequestDto, Long userId) {
-
-        Product product = productRepository.findById(cartRequestDto.getId()).orElseThrow(RuntimeException::new);
-        Optional<ShopBasket> userCart = shopBasketRepository.findById(userId);
-
-        BasketProduct basketProduct
-                = new BasketProduct(product.getId(),
-                product.getTitle(),
-                product.getPrice(),
-                product.getDeliveryFee(),
-                product.getImageUrl(),
-                cartRequestDto.getCount(),
-                product.getSeller().getName()
-        );
-        ShopBasket shopBasket = userCart.orElseGet(() -> new ShopBasket(userId));
-        shopBasket.addProduct(basketProduct);
-        shopBasketRepository.save(shopBasket);
+        addProductToCart(cartRequestDto, userId);
     }
 
     public void addProducts(List<CartProduct> cartProducts, Long userId) {
-
         for (CartProduct cartProduct : cartProducts) {
-            Product product = productRepository.findById(cartProduct.getId()).orElseThrow(RuntimeException::new);
-            Optional<ShopBasket> userCart = shopBasketRepository.findById(userId);
-
-            BasketProduct basketProduct
-                    = new BasketProduct(product.getId(),
-                    product.getTitle(),
-                    product.getPrice(),
-                    product.getDeliveryFee(),
-                    product.getImageUrl(),
-                    cartProduct.getCount(),
-                    product.getSeller().getName()
-            );
-            ShopBasket shopBasket = userCart.orElseGet(() -> new ShopBasket(userId));
-            shopBasket.addProduct(basketProduct);
-            shopBasketRepository.save(shopBasket);
+            addProductToCart(cartProduct, userId);
         }
     }
 
@@ -68,5 +38,23 @@ public class CartService {
 
     public ShopBasket getProducts(Long userId) {
         return shopBasketRepository.findById(userId).orElseThrow(RuntimeException::new);
+    }
+
+    private void addProductToCart(CartProduct cartProduct, Long userId) {
+        Product product = productRepository.findById(cartProduct.getId()).orElseThrow(RuntimeException::new);
+        Optional<ShopBasket> userCart = shopBasketRepository.findById(userId);
+
+        BasketProduct basketProduct
+                = new BasketProduct(product.getId(),
+                product.getTitle(),
+                product.getPrice(),
+                product.getDeliveryFee(),
+                product.getImageUrl(),
+                cartProduct.getCount(),
+                product.getSeller().getName()
+        );
+        ShopBasket shopBasket = userCart.orElseGet(() -> new ShopBasket(userId));
+        shopBasket.addProduct(basketProduct);
+        shopBasketRepository.save(shopBasket);
     }
 }
