@@ -31,6 +31,15 @@ public class TestHelper {
         return addproductRequestDto;
     }
 
+    public static CartProduct createCartProductDto(int count, Long productId) {
+        CartProduct cartProduct = new CartProduct();
+
+        cartProduct.setId(productId);
+        cartProduct.setCount(count);
+
+        return cartProduct;
+    }
+
     public static AddReviewRequestDto createAddReviewRequestDto() {
 
         AddReviewRequestDto addReviewRequest = new AddReviewRequestDto();
