@@ -10,6 +10,7 @@ import com.itda.apiserver.repository.ShopBasketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,6 +37,27 @@ public class CartService {
         ShopBasket shopBasket = userCart.orElseGet(() -> new ShopBasket(userId));
         shopBasket.addProduct(basketProduct);
         shopBasketRepository.save(shopBasket);
+    }
+
+    public void addProducts(List<CartProduct> cartProducts, Long userId) {
+
+        for (CartProduct cartProduct : cartProducts) {
+            Product product = productRepository.findById(cartProduct.getId()).orElseThrow(RuntimeException::new);
+            Optional<ShopBasket> userCart = shopBasketRepository.findById(userId);
+
+            BasketProduct basketProduct
+                    = new BasketProduct(product.getId(),
+                    product.getTitle(),
+                    product.getPrice(),
+                    product.getDeliveryFee(),
+                    product.getImageUrl(),
+                    cartProduct.getCount(),
+                    product.getSeller().getName()
+            );
+            ShopBasket shopBasket = userCart.orElseGet(() -> new ShopBasket(userId));
+            shopBasket.addProduct(basketProduct);
+            shopBasketRepository.save(shopBasket);
+        }
     }
 
     public void deleteProduct(Long productId, Long userId) {

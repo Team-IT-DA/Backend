@@ -9,6 +9,8 @@ import com.itda.apiserver.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/cart")
 @RequiredArgsConstructor
@@ -20,6 +22,13 @@ public class CartController {
     @LoginRequired
     public ApiResult<Void> updateProductToCart(@RequestBody CartProduct cartProduct, @UserId Long userId) {
         cartService.addProduct(cartProduct, userId);
+        return ApiResult.ok(null);
+    }
+
+    @PostMapping("/all")
+    @LoginRequired
+    public ApiResult<Void> updateAllProductsToCart(@RequestBody List<CartProduct> cartProducts, @UserId Long userId) {
+        cartService.addProducts(cartProducts, userId);
         return ApiResult.ok(null);
     }
 
