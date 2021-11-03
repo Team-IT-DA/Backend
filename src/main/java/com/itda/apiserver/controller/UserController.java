@@ -20,8 +20,8 @@ public class UserController {
     }
 
     @GetMapping("/api/duplicateEmail")
-    public ApiResult<Void> verifyEmail(@RequestBody EmailVerificationRequestDto requestDto) {
-        userService.verifyEmail(requestDto.getEmail());
+    public ApiResult<Void> verifyEmail(@RequestParam String email) {
+        userService.verifyEmail(email);
         return ApiResult.ok(null);
     }
 
