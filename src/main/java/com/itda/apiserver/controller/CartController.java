@@ -34,7 +34,7 @@ public class CartController {
 
     @DeleteMapping("/{productId}")
     @LoginRequired
-    public ApiResult<Void> deleteProductFromCart(@RequestParam Long productId, @UserId Long userId) {
+    public ApiResult<Void> deleteProductFromCart(@PathVariable Long productId, @UserId Long userId) {
         cartService.deleteProduct(productId, userId);
         return ApiResult.ok(null);
     }
