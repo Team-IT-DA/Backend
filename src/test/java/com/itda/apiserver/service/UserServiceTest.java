@@ -37,9 +37,6 @@ public class UserServiceTest {
     private User user;
 
     @Mock
-    private EmailVerificationRequestDto emailRequestDto;
-
-    @Mock
     private LoginRequestDto loginRequestDto;
 
     @Mock
@@ -59,10 +56,9 @@ public class UserServiceTest {
     @Test
     @DisplayName("이메일 중복 확인 기능 테스트, 중복된 이메일이 없는 경우")
     void verifyEmail() {
-        when(emailRequestDto.getEmail()).thenReturn("yeon@gmail.com");
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
 
-        userService.verifyEmail(emailRequestDto.getEmail());
+        userService.verifyEmail("yeon@gmail.com");
 
         verify(userRepository, times(1)).existsByEmail(anyString());
     }
@@ -70,10 +66,9 @@ public class UserServiceTest {
     @Test
     @DisplayName("이메일 중복 확인 기능 테스트, 이미 이메일이 존재하는 경우")
     void verifyEmailFail() {
-        when(emailRequestDto.getEmail()).thenReturn("yeon@gmail.com");
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
-        assertThrows(EmailDuplicationException.class, () -> userService.verifyEmail(emailRequestDto.getEmail()));
+        assertThrows(EmailDuplicationException.class, () -> userService.verifyEmail("yeon@gmail.com"));
 
         verify(userRepository, times(1)).existsByEmail(anyString());
     }

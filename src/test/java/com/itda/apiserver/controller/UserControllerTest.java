@@ -54,12 +54,8 @@ public class UserControllerTest {
     @DisplayName("이메일 중복 확인 기능 테스트")
     void verifyEmail() throws Exception {
 
-        EmailVerificationRequestDto emailDto = new EmailVerificationRequestDto();
-        emailDto.setEmail("roach@gmail.com");
-
         mockMvc.perform(get("/api/duplicateEmail")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(emailDto)))
+                .param("email", "roach@gmail.com"))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -121,10 +117,10 @@ public class UserControllerTest {
         String token = "Bearer " + tokenProvider.createToken(user.getId());
 
         mockMvc.perform(post("/api/seller")
-                        .header(HttpHeaders.AUTHORIZATION, token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(addSellerInfoDto)))
-                        .andExpect(status().isOk());
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(addSellerInfoDto)))
+                .andExpect(status().isOk());
 
     }
 
