@@ -64,7 +64,7 @@ public class ProductService {
                 .map(product -> new GetAllProductDto(
                         product.getId(),
                         product.getImageUrl(),
-                        product.getDescription(),
+                        product.getSubTitle(),
                         product.getTitle(),
                         product.getSeller().getName(),
                         product.getPrice()))
