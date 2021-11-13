@@ -34,6 +34,10 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public User getProfile(Long userId) {
+        return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    }
+
     public void verifyEmail(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new EmailDuplicationException();
