@@ -2,6 +2,7 @@ package com.itda.apiserver.controller;
 
 import com.itda.apiserver.annotation.LoginRequired;
 import com.itda.apiserver.annotation.UserId;
+import com.itda.apiserver.domain.User;
 import com.itda.apiserver.dto.*;
 import com.itda.apiserver.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,15 @@ public class UserController {
         userService.updateProfile(updateProfileDto, id);
         return ApiResult.ok(null);
     }
+
+
+    @LoginRequired
+    @GetMapping("/api/myPage/user")
+    public ApiResult<SellerProfileDto> getProfile(@UserId Long userId) {
+        User profile = userService.getProfile(userId);
+        return ApiResult.ok(SellerProfileDto.from(profile));
+    }
+
 
     @PostMapping("/api/login")
     public ApiResult<TokenResponseDto> login(@RequestBody LoginRequestDto requestDto) {

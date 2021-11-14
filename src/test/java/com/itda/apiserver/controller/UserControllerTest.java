@@ -124,6 +124,22 @@ public class UserControllerTest {
 
     }
 
+    @Test
+    @DisplayName("판매자 프로필 GET 요청 테스트")
+    void getSellerTest() throws Exception {
+        User user = singUpToSeller();
+        String token = "Bearer " + tokenProvider.createToken(user.getId());
+
+        mockMvc.perform(get("/api/myPage/user")
+                .header(HttpHeaders.AUTHORIZATION, token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.name").isString())
+                .andExpect(jsonPath("$.data.telephone").isString())
+                .andExpect(jsonPath("$.data.email").isString())
+                .andExpect(jsonPath("$.data.password").isString());
+
+    }
+
     private User singUp() {
         SignUpRequestDto signUpRequestDto = new SignUpRequestDto();
         signUpRequestDto.setName("김나연");
