@@ -55,5 +55,9 @@ public class UserController {
         return ApiResult.ok(null);
     }
 
-
+    @LoginRequired
+    @GetMapping("/api/myPage/seller")
+    public ApiResult<ShowSellerProfileDto> showSellerProfile(@UserId Long userId) {
+        return ApiResult.ok(userService.getSellerProfile(userId));
+    }
 }
