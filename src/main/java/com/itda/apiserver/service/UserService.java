@@ -64,4 +64,12 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public ShowSellerProfileDto getSellerProfile(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        if (!user.isSeller()) {
+            throw new SellerValidationException();
+        }
+
+        return new ShowSellerProfileDto(user.isSeller(), user.getSellerDescription(), user.getSellerImageUrl());
+    }
 }
