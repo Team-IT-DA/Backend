@@ -34,6 +34,10 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public User getProfile(Long userId) {
+        return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    }
+
     public void verifyEmail(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new EmailDuplicationException();
@@ -60,4 +64,12 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public ShowSellerProfileDto getSellerProfile(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        if (!user.isSeller()) {
+            throw new SellerValidationException();
+        }
+
+        return new ShowSellerProfileDto(user.isSeller(), user.getSellerDescription(), user.getSellerImageUrl());
+    }
 }
